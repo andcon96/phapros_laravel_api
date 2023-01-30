@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PoApiResources;
+use App\Http\Resources\WsaPoResources;
 use App\Models\Transaksi\PurchaseOrderMaster;
+use App\Services\WSAServices;
 use Illuminate\Http\Request;
 
 class PoApiController extends Controller
@@ -22,5 +24,12 @@ class PoApiController extends Controller
         $data = $data->paginate(10);
 
         return PoApiResources::collection($data);
+    }
+
+    public function wsapo(Request $request)
+    {
+        $data = (new WSAServices())->wsapo($request->ponbr);
+
+        return WsaPoResources::collection($data);
     }
 }
