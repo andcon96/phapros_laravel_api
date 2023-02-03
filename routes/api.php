@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\PoApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,13 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::middleware('auth:api')->group( function () {
-    route::get('getpo', [PoApiController::class, 'getpo']);
 });
+route::get('getpo', [PoApiController::class, 'getpo']);
 
-
+Route::post('login', [APIController::class, 'login']);
 route::get('wsapo', [PoApiController::class, 'wsapo']);

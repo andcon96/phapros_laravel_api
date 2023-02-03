@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,15 +16,11 @@ class APIController extends Controller
     {
         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
             $user = Auth::user();
-            $nUser = DB::table('users')
-                    ->leftJoin('mcustomers','users.customer_id','mcustomers.id')
-                    ->where('users.id','=',$user->id)
-                    ->first();;
+            $nUser = User::find($user->id)->first();
             // dd($user);
             $success['token'] =  $user->createToken('nApp')->accessToken;
             return response()->json(
                 ['message' => 'Sukses',
-                 'custid' => $user->customer_id,
                  'user' => $nUser,
                  'username' => $user->id, 
                  'success' => $success], $this->successStatus);
