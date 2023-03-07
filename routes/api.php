@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\APIController;
+use App\Http\Controllers\API\LaporanApiController;
 use App\Http\Controllers\API\PoApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,5 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::post('login', [APIController::class, 'login']);
 
+route::post('loadlaporan', [LaporanApiController::class, 'loadlaporan']);
+route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
