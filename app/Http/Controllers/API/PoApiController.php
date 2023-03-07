@@ -8,6 +8,7 @@ use App\Http\Resources\WsaPoResources;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Services\WSAServices;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PoApiController extends Controller
 {
@@ -31,5 +32,16 @@ class PoApiController extends Controller
         $data = (new WSAServices())->wsapo($request->ponbr);
 
         return WsaPoResources::collection($data);
+    }
+
+    public function savepo(Request $request)
+    {
+        $data = $request->all();
+
+        Log::channel('savepo')->info(json_encode($data));
+
+        return response()->json([
+            "message" => "Success"
+        ],200);
     }
 }

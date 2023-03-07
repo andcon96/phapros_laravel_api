@@ -98,6 +98,7 @@ class WSAServices
                     "t_lvc_ship" => (String)$datas->t_lvc_ship,
                     "t_lvc_site" => (String)$datas->t_lvc_site,
                     "t_lvc_vend" => (String)$datas->t_lvc_vend,
+                    "t_lvc_vend_desc" => (String)$datas->t_lvc_vend_desc,
                     "t_lvt_ord" => (String)$datas->t_lvt_ord,
                     "t_lvt_due" => (String)$datas->t_lvt_due,
                     "t_lvc_curr" => (String)$datas->t_lvc_curr,
@@ -112,6 +113,7 @@ class WSAServices
                     "t_lvc_loc" => (String)$datas->t_lvc_loc,
                     "t_lvc_lot_next" => (String)$datas->t_lvc_lot_next,
                     't_isSelected' => false,
+                    "t_lvc_um" => (String)$datas->t_lvc_um
                 ];
             }
             
