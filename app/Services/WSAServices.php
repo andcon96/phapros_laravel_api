@@ -135,6 +135,7 @@ class WSAServices
                             "pod_domain" => (String)$datas->t_lvc_domain,
                             "pod_line" => (String)$datas->t_lvi_line,
                             "pod_part" => (String)$datas->t_lvc_part,
+                            "pod_desc" => (String)$datas->t_lvc_part_desc,
                             "pod_qty_ord" => (String)$datas->t_lvd_qtyord,
                             "pod_qty_rcvd" => (String)$datas->t_lvd_qty_rcvd,
                             "pod_pur_cost" => (String)$datas->t_lvd_price,

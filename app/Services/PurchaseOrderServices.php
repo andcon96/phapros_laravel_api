@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Master\Approval;
 use App\Models\Master\Prefix;
 use App\Models\Master\Qxwsa;
+use App\Models\Transaksi\ApprovalHist;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptChecklist;
 use App\Models\Transaksi\ReceiptDetail;
@@ -34,9 +36,6 @@ class PurchaseOrderServices
     {
         $ponbr = $data['data'][0]['t_lvc_nbr'] ?? '';
         $domain = $data['data'][0]['t_lvc_domain'] ?? '';
-
-        // $kirimqxtend =  $this->qxPurchaseOrderReceipt($data);
-        // dd($kirimqxtend);
 
         DB::beginTransaction();
         try {
@@ -141,11 +140,22 @@ class PurchaseOrderServices
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
             $angkutan->save();
 
+            // Create Approval
+            $approval = Approval::orderBy('approval_order','ASC')->get();
+
+            foreach($approval as $key => $data){
+                $apphist = new ApprovalHist();
+                $apphist->apphist_user_id = $data->approval_user_id;
+                $apphist->apphist_po_domain = $domain;
+                $apphist->apphist_po_nbr = $ponbr;
+                $apphist->save();
+            }
+
             DB::commit();
             return true;
         } catch (Exception $e) {
             DB::rollback();
-            Log::channel('savepo')->info(json_encode($e));
+            Log::channel('savepo')->info($e);
             return false;
         }
     }
