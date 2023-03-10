@@ -118,6 +118,12 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/savepo.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+        'laporan_log' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/laporan_log.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
         ]
     ],
 
