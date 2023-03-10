@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Master\Qxwsa;
+use App\Models\Transaksi\PurchaseOrderDetail;
+use App\Models\Transaksi\PurchaseOrderMaster;
 
 class WSAServices
 {
@@ -90,14 +92,66 @@ class WSAServices
         $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
         
         if($qdocResult == 'true'){
+            $idmstr = '';
+            $pomstr = PurchaseOrderMaster::query()
+                            ->where('po_domain',(String)$dataloop[0]->t_lvc_domain)
+                            ->where('po_nbr',(String)$dataloop[0]->t_lvc_nbr)
+                            ->first();
+            $idmstr = $pomstr->id ?? '';
+            if(!$pomstr){
+                
+                $datamstr = [
+                    'po_domain' => (String)$dataloop[0]->t_lvc_domain,
+                    'po_nbr' => (String)$dataloop[0]->t_lvc_nbr,
+                    'po_ship' => (String)$dataloop[0]->t_lvc_ship,
+                    'po_site' => (String)$dataloop[0]->t_lvc_site,
+                    'po_vend' => (String)$dataloop[0]->t_lvc_vend,
+                    'po_ord_date' => (String)$dataloop[0]->t_lvt_ord,
+                    'po_due_date' => (String)$dataloop[0]->t_lvt_due,
+                    'po_curr' => (String)$dataloop[0]->t_lvc_curr,
+                    'po_status' => (String)$dataloop[0]->t_lvc_status,
+                ];
+                $idmstr = PurchaseOrderMaster::insertGetId($datamstr);
+            }
+
             foreach($dataloop as $datas){
-                $arrayloop[] =                 
-                [    
+                $poddet = PurchaseOrderDetail::query()
+                                ->where('pod_po_id',$idmstr)
+                                ->where('pod_line',(String)$datas->t_lvi_line)
+                                ->where('pod_domain',(String)$datas->t_lvc_domain)
+                                ->first();
+                if($poddet){
+                    // Update
+                    $poddet->pod_qty_ord = (String)$datas->t_lvd_qtyord;
+                    $poddet->pod_qty_rcvd = (String)$datas->t_lvd_qty_rcvd;
+                    $poddet->pod_pur_cost = (String)$datas->t_lvd_price;
+                    $poddet->pod_loc = (String)$datas->t_lvc_loc;
+                    $poddet->pod_lot = (String)$datas->t_lvc_lot_next;
+                    $poddet->save();
+                }else{
+                    // Insert
+                    $datadetail = [    
+                            "pod_po_id" => $idmstr,
+                            "pod_domain" => (String)$datas->t_lvc_domain,
+                            "pod_line" => (String)$datas->t_lvi_line,
+                            "pod_part" => (String)$datas->t_lvc_part,
+                            "pod_desc" => (String)$datas->t_lvc_part_desc,
+                            "pod_qty_ord" => (String)$datas->t_lvd_qtyord,
+                            "pod_qty_rcvd" => (String)$datas->t_lvd_qty_rcvd,
+                            "pod_pur_cost" => (String)$datas->t_lvd_price,
+                            "pod_loc" => (String)$datas->t_lvc_loc,
+                            "pod_lot" => (String)$datas->t_lvc_lot_next,
+                        ];
+                    $data = PurchaseOrderDetail::insert($datadetail);
+                }
+
+                $arrayloop[] = [    
                     "t_lvc_nbr" => (String)$datas->t_lvc_nbr,
                     "t_lvc_domain" => (String)$datas->t_lvc_domain,
                     "t_lvc_ship" => (String)$datas->t_lvc_ship,
                     "t_lvc_site" => (String)$datas->t_lvc_site,
                     "t_lvc_vend" => (String)$datas->t_lvc_vend,
+                    "t_lvc_vend_desc" => (String)$datas->t_lvc_vend_desc,
                     "t_lvt_ord" => (String)$datas->t_lvt_ord,
                     "t_lvt_due" => (String)$datas->t_lvt_due,
                     "t_lvc_curr" => (String)$datas->t_lvc_curr,
@@ -112,6 +166,7 @@ class WSAServices
                     "t_lvc_loc" => (String)$datas->t_lvc_loc,
                     "t_lvc_lot_next" => (String)$datas->t_lvc_lot_next,
                     't_isSelected' => false,
+                    "t_lvc_um" => (String)$datas->t_lvc_um
                 ];
             }
             

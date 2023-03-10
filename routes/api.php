@@ -19,10 +19,13 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth:api')->group(function () {
+    route::get('getpo', [PoApiController::class, 'getpo']);
+    route::post('savepo', [PoApiController::class, 'savepo']);
+    route::get('wsapo', [PoApiController::class, 'wsapo']);
 });
+
 Route::post('login', [APIController::class, 'login']);
-route::get('getpo', [PoApiController::class, 'getpo']);
-route::get('wsapo', [PoApiController::class, 'wsapo']);
+
 
 route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
 route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
