@@ -65,14 +65,14 @@ class ReceiptApiController extends Controller
         $user = $request->userid;
         $receiptnbr = $request->idrcpt;
         
-        
+        $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->first();
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->first();
             $datahist->apphist_status = 'Approved';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
-            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->where('id','>',$datahist->id)->first();
+            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->where('id','>',$datahist->id)->first();
             if(!$nextappr){
                 $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
                 
@@ -100,9 +100,10 @@ class ReceiptApiController extends Controller
         
         $user = $request->userid;
         $receiptnbr = $request->idrcpt;
+        $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->first();
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->first();
             $datahist->apphist_status = 'Rejected';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();

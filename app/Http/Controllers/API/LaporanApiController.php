@@ -55,7 +55,7 @@ class LaporanApiController extends Controller
         
     }
 
-    public function approvereceipt(Request $request)
+    public function submitlaporan(Request $request)
     {
         $rcptnbr = $request->idrcpt;
         $ponbr = $request->ponbr;
@@ -102,50 +102,4 @@ class LaporanApiController extends Controller
         
     }
 
-    public function rejectreceipt(Request $request)
-    {
-        $rcptnbr = $request->idrcpt;
-        $ponbr = $request->ponbr;
-        $part = $request->part;
-        $tglmasuk = $request->tglmasuk;
-        $jmlmasuk = $request->jmlmasuk;
-        $no = $request->no;
-        $lot = $request->lot;
-        $tgl = $request->tgl;
-        $supplier = $request->supplier;
-        $komplain = $request->komplain;
-        $keterangan = $request->keterangan;
-        $komplaindetail = $request->komplaindetail;
-        $angkutan = $request->angkutan;
-        $nopol = $request->nopol;
-        
-        
-        DB::beginTransaction();
-        try{
-            $laporanreceipt = new LaporanReceiptModel();
-            $laporanreceipt->laporan_rcptnbr = $rcptnbr;
-            $laporanreceipt->laporan_ponbr = $ponbr;
-            $laporanreceipt->laporan_part = $part;
-            $laporanreceipt->laporan_tgl_masuk = $tglmasuk;
-            $laporanreceipt->laporan_jmlmasuk = $jmlmasuk;
-            $laporanreceipt->laporan_no = $no;
-            $laporanreceipt->laporan_lot = $lot;
-            $laporanreceipt->laporan_tgl = $tgl;
-            $laporanreceipt->laporan_supplier = $supplier;
-            $laporanreceipt->laporan_komplain = $komplain;
-            $laporanreceipt->laporan_keterangan = $keterangan;
-            $laporanreceipt->laporan_komplaindetail = $komplaindetail;
-            $laporanreceipt->laporan_angkutan = $angkutan;
-            $laporanreceipt->laporan_nopol = $nopol;
-            $laporanreceipt->save();
-            DB::commit();
-            return 'success';
-        }
-        catch(Exception $err){
-            DB::rollback();
-            Log::channel('laporan_log')->info('error on : '.$rcptnbr.' '.$err);
-            return 'error';
-        }
-        
-    }
 }
