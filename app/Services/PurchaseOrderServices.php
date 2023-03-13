@@ -147,6 +147,7 @@ class PurchaseOrderServices
                 $apphist = new ApprovalHist();
                 $apphist->apphist_user_id = $data->approval_user_id;
                 $apphist->apphist_po_domain = $domain;
+                $apphist->apphist_receipt_id = $idrcpmstr;
                 $apphist->apphist_po_nbr = $ponbr;
                 $apphist->save();
             }
