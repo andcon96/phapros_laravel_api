@@ -20,10 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth:api')->group(function () {
-    route::post('savepo', [PoApiController::class, 'savepo']);
+    // PO
     route::get('wsapo', [PoApiController::class, 'wsapo']);
+    route::get('getpo', [PoApiController::class, 'getpo']);
+    route::post('savepo', [PoApiController::class, 'savepo']);
 });
-route::get('getpo', [PoApiController::class, 'getpo']);
 Route::post('login', [APIController::class, 'login']);
 
 //laporan
