@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ApprovalHist extends Model
 {
     use HasFactory;
+    use \Awobaz\Compoships\Compoships;
 
     public $table = 'approval_hist';
 }

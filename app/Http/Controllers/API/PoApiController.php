@@ -16,7 +16,7 @@ class PoApiController extends Controller
     public function getpo(Request $request)
     {
         $data = PurchaseOrderMaster::query()
-            ->with('getDetail');
+            ->with('getDetail','getApprovalHistReceiptByPO');
 
         if($request->search){
             $data->where('po_nbr','LIKE','%'.$request->search.'%')
