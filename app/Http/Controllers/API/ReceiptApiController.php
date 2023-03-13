@@ -13,6 +13,7 @@ use App\Models\Transaksi\ReceiptDetail;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Services\PurchaseOrderServices;
 use App\Services\WSAServices;
+use Carbon\Carbon;
 use Exception;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
@@ -67,16 +68,18 @@ class ReceiptApiController extends Controller
         
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_rcpt_nbr',$receiptnbr)->first();
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->first();
             $datahist->apphist_status = 'Approved';
+            $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
-            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_rcpt_nbr',$receiptnbr)->where('id','>',$datahist->id)->first();
+            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->where('id','>',$datahist->id)->first();
             if(!$nextappr){
                 $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
                 
                 $qxtendreceipt = (new PurchaseOrderServices())->qxPurchaseOrderReceipt($datarcptmstr);
                 if($qxtendreceipt == 'success'){
                     $datarcptmstr->rcpt_status = 'finished';
+                    
                     $datarcptmstr->save();
                     DB::commit();
                     return 'approve success';
@@ -99,15 +102,20 @@ class ReceiptApiController extends Controller
         $receiptnbr = $request->idrcpt;
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_rcpt_nbr',$receiptnbr)->first();
-            $datahist->apphist_status = 'Approved';
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptnbr)->first();
+            $datahist->apphist_status = 'Rejected';
+            $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
+            $datarcptmstr = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
+            $datarcptmstr->rcpt_status = 'rejected';
+            $datarcptmstr->save();
+
             DB::commit();
             return 'reject success';
         }
         catch(Exception $err){
             DB::rollback();
-            Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datahist['apphist_rcpt_nbr'].' '.$err);
+            Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datahist['apphist_receipt_nbr'].' '.$err);
             return 'reject failed';
         }
     }
