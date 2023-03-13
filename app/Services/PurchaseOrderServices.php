@@ -163,8 +163,9 @@ class PurchaseOrderServices
 
     public function qxPurchaseOrderReceipt($data)
     {
-        $ponbr = $data['data'][0]['t_lvc_nbr'];
-        $domain = $data['data'][0]['t_lvc_domain'];
+        $ponbr = $data['getpo']['po_nbr'];
+        return $ponbr;
+        $domain = $data['rcpt_domain'];
         $qxwsa = Qxwsa::firstOrFail();
 
         if (is_null($qxwsa->qx_url)) {
@@ -243,15 +244,15 @@ class PurchaseOrderServices
                         <yn>true</yn>
                         <yn1>true</yn1>';
 
-        foreach($data['$data'] as $key => $datas){
+        foreach($data['get_detail'] as $key => $datas){
             $qdocbody .=     '<lineDetail>
-                                <line>'.$datas['t_lvi_line'].'</line>
+                                <line>'.$datas['rcptd_line'].'</line>
                                 <multiEntry>true</multiEntry>
                                 <receiptDetail>
-                                    <location>'.$datas['t_lvc_loc'].'</location>
-                                    <lotserial>'.$datas['t_lvc_lot'].'</lotserial>
-                                    <lotref>'.$datas['t_lvc_batch'].'</lotref>
-                                    <lotserialQty>'.$datas['t_lvd_qty_terima'].'</lotserialQty>
+                                    <location>'.$datas['rcptd_loc'].'</location>
+                                    <lotserial>'.$datas['rcptd_lot'].'</lotserial>
+                                    <lotref>'.$datas['rcptd_batch'].'</lotref>
+                                    <lotserialQty>'.$datas['rcptd_qty_appr'].'</lotserialQty>
                                     <serialsYn>true</serialsYn>
                                 </receiptDetail>
                             </lineDetail>
@@ -264,8 +265,62 @@ class PurchaseOrderServices
                     </soapenv:Envelope>';
 
         $qdocRequest = $qdocHead . $qdocbody . $qdocfoot;
+        $curlOptions = array(
+            CURLOPT_URL => $qxUrl,
+            CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
+            CURLOPT_TIMEOUT => $timeout + 120, // The maximum number of seconds to allow cURL functions to execute. must be greater than CURLOPT_CONNECTTIMEOUT
+            CURLOPT_HTTPHEADER => $this->httpHeader($qdocRequest),
+            CURLOPT_POSTFIELDS => preg_replace("/\s+/", " ", $qdocRequest),
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+          );
+      
+          $getInfo = '';
+          $httpCode = 0;
+          $curlErrno = 0;
+          $curlError = '';
+      
+      
+          $qdocResponse = '';
+      
+          $curl = curl_init();
+          if ($curl) {
+            curl_setopt_array($curl, $curlOptions);
+            $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
+            //
+            $curlErrno = curl_errno($curl);
+            $curlError = curl_error($curl);
+            $first = true;
+            foreach (curl_getinfo($curl) as $key => $value) {
+              if (gettype($value) != 'array') {
+                if (!$first) $getInfo .= ", ";
+                $getInfo = $getInfo . $key . '=>' . $value;
+                $first = false;
+                if ($key == 'http_code') $httpCode = $value;
+              }
+            }
+            curl_close($curl);
+          }
+      
+          if (is_bool($qdocResponse)) {
+            return false;
+          }
+          // dd($qdocResponse, $qdocRequest);
+      
+          $xmlResp = simplexml_load_string($qdocResponse);
+      
+          $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
+          $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
+      
+          if ($qdocResult == "success" or $qdocResult == "warning") {
+            return 'success';
+          } else {
+            Log::channel('qxtendReceipt')->info('rcpt_nbr: '.$data['rcpt_nbr'].' '.$qdocResponse);
+            return 'failed';
+          }
 
-        dd($qxwsa);
-        return true;
+
     }
 }
