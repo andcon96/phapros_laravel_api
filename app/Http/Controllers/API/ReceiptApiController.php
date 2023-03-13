@@ -72,7 +72,7 @@ class ReceiptApiController extends Controller
             $datahist->apphist_status = 'Approved';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
-            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
+            $nextappr = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
             if(!$nextappr){
                 $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
                 
