@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\APIController;
 use App\Http\Controllers\API\LaporanApiController;
 use App\Http\Controllers\API\PoApiController;
+use App\Http\Controllers\API\ReceiptApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,11 @@ Route::middleware('auth:api')->group(function () {
 
 Route::post('login', [APIController::class, 'login']);
 
-
+//laporan
 route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
 route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
+
+//receipt approval
+route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
+route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
+route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);

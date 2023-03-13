@@ -38,4 +38,15 @@ class ReceiptMaster extends Model
     public function getTransport(){
         return $this->hasMany(ReceiptTransport::class,'rcptt_rcpt_id');
     }
+
+    public function getLaporan(){
+        return $this->hasOne(LaporanReceiptModel::class,'laporan_rcptnbr','rcpt_nbr')->latest();
+    }
+    public function getApprHistlast(){
+        return $this->hasOne(ApprovalHist::class,'apphist_rcpt_nbr','rcpt_nbr');
+    }
+    public function getApprHistfirst(){
+        return $this->hasOne(ApprovalHist::class,'apphist_rcpt_nbr','rcpt_nbr');
+    }
+
 }
