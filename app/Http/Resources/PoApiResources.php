@@ -30,6 +30,7 @@ class PoApiResources extends JsonResource
                 return $order->pod_qty_ord * $order->pod_pur_cost;
             }),2),
             'po_details' => $this->getDetail,
+            'po_list_receipt' => $this->getHistoryReceipt,
             'po_list_approval' => $this->getApprovalHistReceiptByPO
         ];
     }

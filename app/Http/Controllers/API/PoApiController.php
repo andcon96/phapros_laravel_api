@@ -16,7 +16,11 @@ class PoApiController extends Controller
     public function getpo(Request $request)
     {
         $data = PurchaseOrderMaster::query()
-            ->with('getDetail','getApprovalHistReceiptByPO');
+            ->with('getDetail',
+            'getApprovalHistReceiptByPO',
+            'getHistoryReceipt.getDetail',
+            'getHistoryReceipt.getHistoryApproval',
+            'getHistoryReceipt.getIsOngoinApproval');
 
         if($request->search){
             $data->where('po_nbr','LIKE','%'.$request->search.'%')
@@ -24,7 +28,6 @@ class PoApiController extends Controller
         }
 
         $data = $data->paginate(10);
-
         return PoApiResources::collection($data);
     }
 
