@@ -67,6 +67,8 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_rcpt_id = $idrcpmstr;
                 $detailreceipt->rcptd_line = $datas['t_lvi_line'];
                 $detailreceipt->rcptd_part = $datas['t_lvc_part'];
+                $detailreceipt->rcptd_part_desc = $datas['t_lvc_part_desc'];
+                $detailreceipt->rcptd_part_um = $datas['t_lvc_um'];
                 $detailreceipt->rcptd_qty_arr = $datas['t_lvd_qty_datang'];
                 $detailreceipt->rcptd_qty_appr = $datas['t_lvd_qty_terima'];
                 $detailreceipt->rcptd_qty_rej = $datas['t_lvd_qty_reject'];
@@ -113,14 +115,14 @@ class PurchaseOrderServices
             $kemasan->rcptk_kemasan_drumvat_desc = $data['is_damage_kemasan_drumvat'];
             $kemasan->rcptk_kemasan_palletpeti = $data['kemasan_palletpeti'] ? 1 : 0;
             $kemasan->rcptk_kemasan_palletpeti_desc = $data['is_damage_kemasan_palletpeti'];
-            $kemasan->rcptk_is_clean = $data['is_clean'];
+            $kemasan->rcptk_is_clean = $data['is_clean'] == 'null' ? 1 : 0;
             $kemasan->rcptk_is_clean_desc = $data['keterangan_is_clean'];
-            $kemasan->rcptk_is_dry = $data['is_dry'];
+            $kemasan->rcptk_is_dry = $data['is_dry'] == 'null' ? 1 : 0;
             $kemasan->rcptk_is_dry_desc = $data['keterangan_is_dry'];
-            $kemasan->rcptk_is_not_spilled = $data['is_not_spilled'];
+            $kemasan->rcptk_is_not_spilled = $data['is_not_spilled'] == 'null' ? 1 : 0;
             $kemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
-            $kemasan->rcptk_is_sealed = $data['is_sealed'];
-            $kemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'];
+            $kemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : 0;
+            $kemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : 0;
             $kemasan->save();
 
             // Save Angkutan
@@ -128,15 +130,15 @@ class PurchaseOrderServices
             $angkutan->rcptt_rcpt_id  = $idrcpmstr;
             $angkutan->rcptt_transporter_no  = $data['transporter_no'];
             $angkutan->rcptt_police_no  = $data['police_no'];
-            $angkutan->rcptt_is_clean  = $data['is_clean_angkutan'];
+            $angkutan->rcptt_is_clean  = $data['is_clean_angkutan'] == 'null' ? 1 : 0;
             $angkutan->rcptt_is_clean_desc  = $data['keterangan_is_clean_angkutan'];
-            $angkutan->rcptt_is_dry  = $data['is_dry_angkutan'];
+            $angkutan->rcptt_is_dry  = $data['is_dry_angkutan'] == 'null' ? 1 : 0;
             $angkutan->rcptt_is_dry_desc  = $data['keterangan_is_dry_angkutan'];
-            $angkutan->rcptt_is_not_spilled  = $data['is_not_spilled_angkutan'];
+            $angkutan->rcptt_is_not_spilled  = $data['is_not_spilled_angkutan'] == 'null' ? 1 : 0;
             $angkutan->rcptt_is_not_spilled_desc  = $data['keterangan_is_not_spilled_angkutan'];
-            $angkutan->rcptt_is_position_single  = $data['material_position'];
+            $angkutan->rcptt_is_position_single  = $data['material_position'] == 'null' ? 1 : 0;
             $angkutan->rcptt_is_position_single_desc  = $data['keterangan_material_position'];
-            $angkutan->rcptt_is_segregated  = $data['is_segregated'];
+            $angkutan->rcptt_is_segregated  = $data['is_segregated'] == 'null' ? 1 : 0;
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
             $angkutan->save();
 
@@ -151,6 +153,10 @@ class PurchaseOrderServices
                 $apphist->apphist_po_nbr = $ponbr;
                 $apphist->save();
             }
+
+            // Update Prefix
+            $prefix->prefix_rcpt_rn = $rn;
+            $prefix->save();
 
             DB::commit();
             return true;
