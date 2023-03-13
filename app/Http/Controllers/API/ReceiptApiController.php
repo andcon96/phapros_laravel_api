@@ -89,6 +89,10 @@ class ReceiptApiController extends Controller
                     return 'approve failed';
                 }
             }
+            else{
+                DB::commit();
+                return 'approve success';
+            }
         }
         catch(Exception $err){
             DB::rollback();
