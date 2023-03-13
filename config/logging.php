@@ -124,6 +124,11 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laporan_log.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+        ],
+        'qxtendReceipt' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/qxtendReceipt.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
         ]
     ],
 
