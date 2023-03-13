@@ -25,5 +25,6 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::post('login', [APIController::class, 'login']);
 
-route::post('loadlaporan', [LaporanApiController::class, 'loadlaporan']);
+
+route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
 route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
