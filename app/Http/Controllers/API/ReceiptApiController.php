@@ -68,11 +68,11 @@ class ReceiptApiController extends Controller
         $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->first();
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->first();
             $datahist->apphist_status = 'Approved';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
-            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->where('id','>',$datahist->id)->first();
+            $nextappr = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
             if(!$nextappr){
                 $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
                 
@@ -103,7 +103,7 @@ class ReceiptApiController extends Controller
         $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_nbr',$receiptdata->id)->first();
+            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->first();
             $datahist->apphist_status = 'Rejected';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
             $datahist->save();
@@ -116,7 +116,7 @@ class ReceiptApiController extends Controller
         }
         catch(Exception $err){
             DB::rollback();
-            Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datahist['apphist_receipt_nbr'].' '.$err);
+            Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datahist['apphist_receipt_id'].' '.$err);
             return 'reject failed';
         }
     }
