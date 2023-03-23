@@ -12,9 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $connection = 'mysql2';
 
-    public $table = 'mst_anggota';
 
     public function findForPassport($identifier) {
         return $this->orWhere('email', $identifier)->orWhere('nik', $identifier)->first();

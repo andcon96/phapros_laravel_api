@@ -24,14 +24,16 @@ Route::middleware('auth:api')->group(function () {
     route::get('wsapo', [PoApiController::class, 'wsapo']);
     route::get('getpo', [PoApiController::class, 'getpo']);
     route::post('savepo', [PoApiController::class, 'savepo']);
+    
+    //laporan
+    route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
+    route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
+
+    //receipt approval
+    route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
+    route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
+    route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
 });
 Route::post('login', [APIController::class, 'login']);
 
-//laporan
-route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
-route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
 
-//receipt approval
-route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
-route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
-route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
