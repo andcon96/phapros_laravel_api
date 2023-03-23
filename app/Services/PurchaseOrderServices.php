@@ -55,7 +55,7 @@ class PurchaseOrderServices
             $poreceipt->rcpt_domain = $domain;
             $poreceipt->rcpt_nbr = $newprefix;
             $poreceipt->rcpt_status = 'created';
-            $poreceipt->rcpt_user_id  = $data['user_id'] ?? '';
+            $poreceipt->rcpt_user_id  = $data['id_anggota'] ?? '';
             $poreceipt->rcpt_date  = Carbon::now()->toDateString();
             $poreceipt->save();
 
