@@ -11,25 +11,47 @@ use Illuminate\Support\Facades\DB;
 class APIController extends Controller
 {
     public $successStatus = 200;
-    
+
     public function login()
     {
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-            $user = Auth::user();
-            $nUser = User::find($user->id)->first();
-            // dd($user);
-            $success['token'] =  $user->createToken('nApp')->accessToken;
-            return response()->json(
-                ['message' => 'Sukses',
-                 'user' => $nUser,
-                 'username' => $user->id, 
-                 'success' => $success], $this->successStatus);
-        }
-        else{
-            return response()->json(['message' => 'Error', 'error'=>'Unauthorised'], 401);
+        // if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
+        //     $user = Auth::user();
+        //     $nUser = User::find($user->id)->first();
+        //     // dd($user);
+        //     $success['token'] =  $user->createToken('nApp')->accessToken;
+        //     return response()->json(
+        //         ['message' => 'Sukses',
+        //          'user' => $nUser,
+        //          'username' => $user->id, 
+        //          'success' => $success], $this->successStatus);
+        // }
+        // else{
+        //     return response()->json(['message' => 'Error', 'error'=>'Unauthorised'], 401);
+        // }
+
+        $user = User::where('nik', request('nik'))->first();
+        if ($user) {
+            if (md5(request('password')) == $user->password) {
+
+                $success['token'] =  $user->createToken('nApp')->accessToken;
+                return response()->json(
+                    [
+                        'message' => 'Sukses',
+                        'user' => $user,
+                        'username' => $user->id,
+                        'success' => $success
+                    ],
+                    $this->successStatus
+                );
+            } else {
+                $response = ["message" => "Password mismatch"];
+                return response($response, 422);
+            }
+        } else {
+            return response()->json(['message' => 'Error', 'error' => 'Unauthorised'], 401);
         }
     }
-    
+
     public function resetPass(Request $request)
     {
         $id = $request->input('id');
@@ -40,26 +62,24 @@ class APIController extends Controller
         $hasher = app('hash');
 
         $users = DB::table("users")
-                    ->select('id','password')
-                    ->where("users.id",$id)
-                    ->first();
+            ->select('id', 'password')
+            ->where("users.id", $id)
+            ->first();
 
-        if($hasher->check($oldpass,$users->password))
-        {
-            if($password != $confpass)
-            {
-                return response()->json(['message' => 'Error', 'error'=>'Confirm & New Doesnt Match'], 401);
-            }else{
+        if ($hasher->check($oldpass, $users->password)) {
+            if ($password != $confpass) {
+                return response()->json(['message' => 'Error', 'error' => 'Confirm & New Doesnt Match'], 401);
+            } else {
                 DB::table('users')
-                ->where('id', $id)
-                ->update(['password' => Hash::make($password)]);
+                    ->where('id', $id)
+                    ->update(['password' => Hash::make($password)]);
 
                 return response()->json([
                     'message' => 'Success',
-                ],200);
+                ], 200);
             }
-        }else{
-                return response()->json(['message' => 'Error', 'error'=>'Old Pass is wrong'], 401);
-        }         
+        } else {
+            return response()->json(['message' => 'Error', 'error' => 'Old Pass is wrong'], 401);
+        }
     }
 }
