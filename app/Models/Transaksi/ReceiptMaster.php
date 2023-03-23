@@ -20,7 +20,7 @@ class ReceiptMaster extends Model
     }
     
     public function getUser(){
-        return $this->hasOne(User::class,'id','rcpt_user_id');
+        return $this->hasOne(User::class,'id_anggota','rcpt_user_id');
     }
 
     public function getChecklist(){
