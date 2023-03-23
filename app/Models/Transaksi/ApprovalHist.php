@@ -14,6 +14,6 @@ class ApprovalHist extends Model
     public $table = 'approval_hist';
 
     public function getUser(){
-        return $this->hasOne(User::class,'id','apphist_user_id');
+        return $this->hasOne(User::class,'id_anggota','apphist_user_id');
     }
 }
