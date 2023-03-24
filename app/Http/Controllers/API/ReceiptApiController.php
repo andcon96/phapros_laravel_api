@@ -24,7 +24,7 @@ class ReceiptApiController extends Controller
 {
     public function getreceipt(Request $request)
     {
-        
+
         $data = ReceiptDetail::query()->with(['getMaster.getpo','getMaster.getTransport',
         'getMaster.getApprHistlast' => function($q){
             $q->where('apphist_status','!=',null)->latest();
@@ -39,7 +39,7 @@ class ReceiptApiController extends Controller
             }
         })
         ->selectRaw('
-        min(rcptd_rcpt_id) as rcptd_rcpt_id,
+        rcptd_rcpt_id,
         min(rcptd_lot) as rcptd_lot,
         min(rcptd_loc) as rcptd_loc,
         rcptd_part,
@@ -51,9 +51,9 @@ class ReceiptApiController extends Controller
 
             
         
-        $data = $data->groupBy('rcptd_part')->get();
+        $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get();
          return $data;
-
+        
 
         
     }
