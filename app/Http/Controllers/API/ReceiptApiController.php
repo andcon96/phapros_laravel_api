@@ -86,6 +86,7 @@ class ReceiptApiController extends Controller
                 }
                 else if($qxtendreceipt == 'failed'){
                     DB::rollback();
+                    Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datarcptmstr['rcpt_nbr'].'qxtend');
                     return 'approve failed';
                 }
             }
@@ -97,6 +98,7 @@ class ReceiptApiController extends Controller
         catch(Exception $err){
             DB::rollback();
             Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datarcptmstr['rcpt_nbr'].' '.$err);
+            
             return 'approve failed';
         }
     }

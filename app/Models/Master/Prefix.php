@@ -10,4 +10,8 @@ class Prefix extends Model
     use HasFactory;
 
     public $table = 'prefix';
+    protected $fillable = [
+        'id'
+    ];
+
 }

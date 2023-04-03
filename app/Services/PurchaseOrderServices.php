@@ -170,7 +170,7 @@ class PurchaseOrderServices
     public function qxPurchaseOrderReceipt($data)
     {
         $ponbr = $data['getpo']['po_nbr'];
-        return $ponbr;
+        
         $domain = $data['rcpt_domain'];
         $qxwsa = Qxwsa::firstOrFail();
 
@@ -189,8 +189,8 @@ class PurchaseOrderServices
                         xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
                         <soapenv:Header>
                             <wsa:Action/>
-                            <wsa:To>urn:services-qad-com:QXPURCH</wsa:To>
-                            <wsa:MessageID>urn:services-qad-com::QXPURCH</wsa:MessageID>
+                            <wsa:To>urn:services-qad-com:PHAndroid</wsa:To>
+                            <wsa:MessageID>urn:services-qad-com::PHAndroid</wsa:MessageID>
                             <wsa:ReferenceParameters>
                             <qcom:suppressResponseDetail>true</qcom:suppressResponseDetail>
                             </wsa:ReferenceParameters>
@@ -246,11 +246,11 @@ class PurchaseOrderServices
         $qdocbody = '<dsPurchaseOrderReceive>
                         <purchaseOrderReceive>
                         <ordernum>'.$ponbr.'</ordernum>
-                        <!-- <receiptDate>2003-01-31</receiptDate> -->
+                        
                         <yn>true</yn>
                         <yn1>true</yn1>';
-
-        foreach($data['get_detail'] as $key => $datas){
+        
+        foreach($data['getDetail'] as $key => $datas){
             $qdocbody .=     '<lineDetail>
                                 <line>'.$datas['rcptd_line'].'</line>
                                 <multiEntry>true</multiEntry>
@@ -261,16 +261,17 @@ class PurchaseOrderServices
                                     <lotserialQty>'.$datas['rcptd_qty_appr'].'</lotserialQty>
                                     <serialsYn>true</serialsYn>
                                 </receiptDetail>
-                            </lineDetail>
-                            </purchaseOrderReceive>
-                        </dsPurchaseOrderReceive>';
+                            </lineDetail>';
         }
 
-        $qdocfoot = '</receivePurchaseOrder>
+        $qdocfoot = '</purchaseOrderReceive>
+        </dsPurchaseOrderReceive>
+        </receivePurchaseOrder>
                         </soapenv:Body>
                     </soapenv:Envelope>';
 
         $qdocRequest = $qdocHead . $qdocbody . $qdocfoot;
+        
         $curlOptions = array(
             CURLOPT_URL => $qxUrl,
             CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
@@ -311,12 +312,13 @@ class PurchaseOrderServices
           }
       
           if (is_bool($qdocResponse)) {
-            return false;
+            Log::channel('qxtendReceipt')->info('rcpt_nbr: '.$data['rcpt_nbr'].' qxtend connection error');
+            return 'failed';
           }
           // dd($qdocResponse, $qdocRequest);
       
           $xmlResp = simplexml_load_string($qdocResponse);
-      
+          
           $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
           $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
       

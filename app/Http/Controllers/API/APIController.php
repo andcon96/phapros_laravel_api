@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\User2;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class APIController extends Controller
     public function login()
     {
         // if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-        //     $user = Auth::user();
+            // $user = Auth::user();
         //     $nUser = User::find($user->id)->first();
         //     // dd($user);
         //     $success['token'] =  $user->createToken('nApp')->accessToken;
@@ -29,28 +30,35 @@ class APIController extends Controller
         // else{
         //     return response()->json(['message' => 'Error', 'error'=>'Unauthorised'], 401);
         // }
+        $usercheck = User2::where('nik',request('nik'))->first();
+        if($usercheck){
+            $user = User::where('nik', request('nik'))->first();
 
-        $user = User::where('nik', request('nik'))->first();
-        if ($user) {
-            if (md5(request('password')) == $user->password) {
+            if ($user) {
+                if (md5(request('password')) == $user->password) {
 
-                $success['token'] =  $user->createToken('nApp')->accessToken;
-                return response()->json(
-                    [
-                        'message' => 'Sukses',
-                        'user' => $user,
-                        'username' => $user->id,
-                        'success' => $success
-                    ],
-                    $this->successStatus
-                );
+                    $success['token'] =  $user->createToken('nApp')->accessToken;
+                    return response()->json(
+                        [
+                            'message' => 'Sukses',
+                            'user' => $user,
+                            'username' => $user->id,
+                            'success' => $success
+                        ],
+                        $this->successStatus
+                    );
+                } else {
+                    $response = ["message" => "Password mismatch"];
+                    return response($response, 422);
+                }
             } else {
-                $response = ["message" => "Password mismatch"];
-                return response($response, 422);
+                return response()->json(['message' => 'Error', 'error' => 'Unauthorised'], 401);
             }
-        } else {
+        }
+        else {
             return response()->json(['message' => 'Error', 'error' => 'Unauthorised'], 401);
         }
+        
     }
 
     public function resetPass(Request $request)

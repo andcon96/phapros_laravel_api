@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User2;
+
 return [
 
     /*
@@ -38,7 +40,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'usersweb',
         ],
         
         'api' => [
@@ -69,6 +71,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        'usersweb' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User2::class,
+        ],
+        
 
         // 'users' => [
         //     'driver' => 'database',

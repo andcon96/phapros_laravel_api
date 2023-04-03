@@ -14,7 +14,8 @@
         "laravel/passport": "*",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "laravel/ui": "*"
+        "laravel/ui": "*",
+        "realrashid/sweet-alert": "^4.1"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
