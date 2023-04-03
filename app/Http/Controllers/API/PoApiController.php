@@ -41,20 +41,42 @@ class PoApiController extends Controller
     public function savepo(Request $request)
     {
         $data = $request->all();
+        Log::channel('savepo')->info($request);
+        
+        if ($request->hasFile('images')) {
+            foreach($request->file('images') as $key => $dataImage){
+                if ($dataImage->isValid()) {
+                    $dataTime = date('Ymd_His');
+                    $filename = $dataTime . '-' .$dataImage->getClientOriginalName();
+                    
+                    // Simpan File Upload pada Public
+                    $savepath = public_path('/uploadfile/');
+                    $dataImage->move($savepath, $filename);
+                }
+            }
+    
+            return response()->json(['success' => true]);
+            
+        } else {
+            Log::channel('savepo')->info('no file');
+            // return response()->json(['success' => false, 'error' => 'No image file uploaded'], 400);
+        }
 
-        Log::channel('savepo')->info(json_encode($data));
+
+        return response()->json([
+            "message" => "Success"
+        ],200);
 
         // Save Receipt & Dokumen Dll
-        $saveddata = (new PurchaseOrderServices())->savedetail($data);
-        
-        if($saveddata == true){
-            return response()->json([
-                "message" => "Success"
-            ],200);
-        }else{
-            return response()->json([
-                "message" => "Failed"
-            ],400);
-        }
+        // $saveddata = (new PurchaseOrderServices())->savedetail($data);
+        // if($saveddata == true){
+        //     return response()->json([
+        //         "message" => "Success"
+        //     ],200);
+        // }else{
+        //     return response()->json([
+        //         "message" => "Failed"
+        //     ],400);
+        // }
     }
 }

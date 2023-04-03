@@ -48,7 +48,7 @@ class APIController extends Controller
                         $this->successStatus
                     );
                 } else {
-                    $response = ["message" => "Password mismatch"];
+                    $response = ["message" => "Error"];
                     return response($response, 422);
                 }
             } else {
