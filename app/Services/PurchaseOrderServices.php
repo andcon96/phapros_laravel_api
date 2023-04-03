@@ -34,8 +34,10 @@ class PurchaseOrderServices
 
     public function savedetail($data)
     {
-        $ponbr = $data['data'][0]['t_lvc_nbr'] ?? '';
-        $domain = $data['data'][0]['t_lvc_domain'] ?? '';
+        $newdata = json_decode($data['data']);
+        
+        $ponbr = $newdata[0]->t_lvc_nbr ?? '';
+        $domain = $newdata[0]->t_lvc_domain ?? '';
 
         DB::beginTransaction();
         try {
@@ -62,19 +64,19 @@ class PurchaseOrderServices
             $idrcpmstr = $poreceipt->id;
 
             // Save Receipt Detail
-            foreach ($data['data'] as $key => $datas) {
+            foreach ($newdata as $key => $datas) {
                 $detailreceipt = new ReceiptDetail();
                 $detailreceipt->rcptd_rcpt_id = $idrcpmstr;
-                $detailreceipt->rcptd_line = $datas['t_lvi_line'];
-                $detailreceipt->rcptd_part = $datas['t_lvc_part'];
-                $detailreceipt->rcptd_part_desc = $datas['t_lvc_part_desc'];
-                $detailreceipt->rcptd_part_um = $datas['t_lvc_um'];
-                $detailreceipt->rcptd_qty_arr = $datas['t_lvd_qty_datang'];
-                $detailreceipt->rcptd_qty_appr = $datas['t_lvd_qty_terima'];
-                $detailreceipt->rcptd_qty_rej = $datas['t_lvd_qty_reject'];
-                $detailreceipt->rcptd_loc = $datas['t_lvc_loc'];
-                $detailreceipt->rcptd_lot = $datas['t_lvc_lot'];
-                $detailreceipt->rcptd_batch = $datas['t_lvc_batch'];
+                $detailreceipt->rcptd_line = $datas->t_lvi_line;
+                $detailreceipt->rcptd_part = $datas->t_lvc_part;
+                $detailreceipt->rcptd_part_desc = $datas->t_lvc_part_desc;
+                $detailreceipt->rcptd_part_um = $datas->t_lvc_um;
+                $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
+                $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
+                $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
+                $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
+                $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
+                $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
                 $detailreceipt->save();
             }
 
@@ -143,9 +145,9 @@ class PurchaseOrderServices
             $angkutan->save();
 
             // Create Approval
-            $approval = Approval::orderBy('approval_order','ASC')->get();
+            $approval = Approval::orderBy('approval_order', 'ASC')->get();
 
-            foreach($approval as $key => $data){
+            foreach ($approval as $key => $data) {
                 $apphist = new ApprovalHist();
                 $apphist->apphist_user_id = $data->approval_user_id;
                 $apphist->apphist_po_domain = $domain;
@@ -167,10 +169,43 @@ class PurchaseOrderServices
         }
     }
 
+    public function saveUploadFile($data)
+    {
+        // TTD Driver
+        if ($data['signature'] != '') {
+            $imagettd = base64_decode($data['signature']);
+
+            if ($imagettd) {
+                $dataTime = date('Ymd_His');
+                $filename = $dataTime . '-TTD-' . $data['nik'] . '.png';
+
+                // Simpan File Upload pada Public
+                $savepath = public_path('/uploadttd/');
+
+                $fullfile = $savepath . $filename;
+                file_put_contents($fullfile, $imagettd);
+            }
+        }
+
+        // Upload File
+        if (array_key_exists('images', $data)) {
+            foreach ($data['images'] as $key => $dataImage) {
+                if ($dataImage->isValid()) {
+                    $dataTime = date('Ymd_His');
+                    $filename = $dataTime . '-' . $dataImage->getClientOriginalName();
+
+                    // Simpan File Upload pada Public
+                    $savepath = public_path('/uploadfile/');
+                    $dataImage->move($savepath, $filename);
+                }
+            }
+        }
+    }
+
     public function qxPurchaseOrderReceipt($data)
     {
         $ponbr = $data['getpo']['po_nbr'];
-        
+
         $domain = $data['rcpt_domain'];
         $qxwsa = Qxwsa::firstOrFail();
 
@@ -245,20 +280,20 @@ class PurchaseOrderServices
 
         $qdocbody = '<dsPurchaseOrderReceive>
                         <purchaseOrderReceive>
-                        <ordernum>'.$ponbr.'</ordernum>
+                        <ordernum>' . $ponbr . '</ordernum>
                         
                         <yn>true</yn>
                         <yn1>true</yn1>';
-        
-        foreach($data['getDetail'] as $key => $datas){
+
+        foreach ($data['getDetail'] as $key => $datas) {
             $qdocbody .=     '<lineDetail>
-                                <line>'.$datas['rcptd_line'].'</line>
+                                <line>' . $datas['rcptd_line'] . '</line>
                                 <multiEntry>true</multiEntry>
                                 <receiptDetail>
-                                    <location>'.$datas['rcptd_loc'].'</location>
-                                    <lotserial>'.$datas['rcptd_lot'].'</lotserial>
-                                    <lotref>'.$datas['rcptd_batch'].'</lotref>
-                                    <lotserialQty>'.$datas['rcptd_qty_appr'].'</lotserialQty>
+                                    <location>' . $datas['rcptd_loc'] . '</location>
+                                    <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
+                                    <lotref>' . $datas['rcptd_batch'] . '</lotref>
+                                    <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
                                     <serialsYn>true</serialsYn>
                                 </receiptDetail>
                             </lineDetail>';
@@ -271,7 +306,7 @@ class PurchaseOrderServices
                     </soapenv:Envelope>';
 
         $qdocRequest = $qdocHead . $qdocbody . $qdocfoot;
-        
+
         $curlOptions = array(
             CURLOPT_URL => $qxUrl,
             CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
@@ -282,18 +317,18 @@ class PurchaseOrderServices
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false
-          );
-      
-          $getInfo = '';
-          $httpCode = 0;
-          $curlErrno = 0;
-          $curlError = '';
-      
-      
-          $qdocResponse = '';
-      
-          $curl = curl_init();
-          if ($curl) {
+        );
+
+        $getInfo = '';
+        $httpCode = 0;
+        $curlErrno = 0;
+        $curlError = '';
+
+
+        $qdocResponse = '';
+
+        $curl = curl_init();
+        if ($curl) {
             curl_setopt_array($curl, $curlOptions);
             $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
             //
@@ -301,34 +336,32 @@ class PurchaseOrderServices
             $curlError = curl_error($curl);
             $first = true;
             foreach (curl_getinfo($curl) as $key => $value) {
-              if (gettype($value) != 'array') {
-                if (!$first) $getInfo .= ", ";
-                $getInfo = $getInfo . $key . '=>' . $value;
-                $first = false;
-                if ($key == 'http_code') $httpCode = $value;
-              }
+                if (gettype($value) != 'array') {
+                    if (!$first) $getInfo .= ", ";
+                    $getInfo = $getInfo . $key . '=>' . $value;
+                    $first = false;
+                    if ($key == 'http_code') $httpCode = $value;
+                }
             }
             curl_close($curl);
-          }
-      
-          if (is_bool($qdocResponse)) {
-            Log::channel('qxtendReceipt')->info('rcpt_nbr: '.$data['rcpt_nbr'].' qxtend connection error');
+        }
+
+        if (is_bool($qdocResponse)) {
+            Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' qxtend connection error');
             return 'failed';
-          }
-          // dd($qdocResponse, $qdocRequest);
-      
-          $xmlResp = simplexml_load_string($qdocResponse);
-          
-          $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
-          $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
-      
-          if ($qdocResult == "success" or $qdocResult == "warning") {
+        }
+        // dd($qdocResponse, $qdocRequest);
+
+        $xmlResp = simplexml_load_string($qdocResponse);
+
+        $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
+        $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
+
+        if ($qdocResult == "success" or $qdocResult == "warning") {
             return 'success';
-          } else {
-            Log::channel('qxtendReceipt')->info('rcpt_nbr: '.$data['rcpt_nbr'].' '.$qdocResponse);
+        } else {
+            Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocResponse);
             return 'failed';
-          }
-
-
+        }
     }
 }
