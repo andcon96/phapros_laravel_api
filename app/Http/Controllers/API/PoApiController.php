@@ -40,10 +40,13 @@ class PoApiController extends Controller
 
     public function savepo(Request $request)
     {
+        Log::channel('savepo')->info($request);
         $data = $request->all();
         
+        // Upload Image
         $uploadImage = (new PurchaseOrderServices())->saveUploadFile($data);
         
+
         // Save Receipt & Dokumen Dll
         $saveddata = (new PurchaseOrderServices())->savedetail($data);
         if($saveddata == true){
