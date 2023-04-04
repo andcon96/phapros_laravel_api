@@ -40,16 +40,15 @@ class PoApiController extends Controller
 
     public function savepo(Request $request)
     {
-        Log::channel('savepo')->info($request);
         $data = $request->all();
         
-        // Upload Image
-        $uploadImage = (new PurchaseOrderServices())->saveUploadFile($data);
-        
-
-        // Save Receipt & Dokumen Dll
+        // Save Receipt & Dokumen Dll & Upload Image
         $saveddata = (new PurchaseOrderServices())->savedetail($data);
-        if($saveddata == true){
+        if($saveddata[0] == true){
+
+            // 0 => Status True/False , 1 => Rcpt ID
+            $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
+
             return response()->json([
                 "message" => "Success"
             ],200);

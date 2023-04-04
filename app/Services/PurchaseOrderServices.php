@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendEmailPOApproval;
 use App\Models\Master\Approval;
 use App\Models\Master\Prefix;
 use App\Models\Master\Qxwsa;
@@ -10,6 +11,7 @@ use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptChecklist;
 use App\Models\Transaksi\ReceiptDetail;
 use App\Models\Transaksi\ReceiptDocument;
+use App\Models\Transaksi\ReceiptFileUpload;
 use App\Models\Transaksi\ReceiptKemasan;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Models\Transaksi\ReceiptTransport;
@@ -17,6 +19,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderServices
 {
@@ -35,7 +38,7 @@ class PurchaseOrderServices
     public function savedetail($data)
     {
         $newdata = json_decode($data['data']);
-        
+
         $ponbr = $newdata[0]->t_lvc_nbr ?? '';
         $domain = $newdata[0]->t_lvc_domain ?? '';
 
@@ -144,6 +147,50 @@ class PurchaseOrderServices
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
             $angkutan->save();
 
+            // TTD Driver
+            if ($data['signature'] != '') {
+                $imagettd = base64_decode($data['signature']);
+
+                if ($imagettd) {
+                    $dataTime = date('Ymd_His');
+                    $filename = $dataTime . '-TTD-' . $data['nik'] . '.png';
+
+                    // Simpan File Upload pada Public
+                    $savepath = public_path('/uploadttd/');
+
+                    $fullfile = $savepath . $filename;
+                    file_put_contents($fullfile, $imagettd);
+
+                    $newdata = new ReceiptFileUpload();
+                    $newdata->rcptfu_rcpt_id = $idrcpmstr;
+                    $newdata->rcptfu_path = $fullfile;
+                    $newdata->rcptfu_is_ttd = 1;
+                    $newdata->save();
+                }
+            }
+
+            // Upload File
+            if (array_key_exists('images', $data)) {
+                foreach ($data['images'] as $key => $dataImage) {
+                    if ($dataImage->isValid()) {
+                        $dataTime = date('Ymd_His');
+                        $filename = $dataTime . '-' . $dataImage->getClientOriginalName();
+
+                        // Simpan File Upload pada Public
+                        $savepath = public_path('/uploadfile/');
+                        $dataImage->move($savepath, $filename);
+
+                        $fullfile = $savepath.$filename;
+                        
+                        $newdata = new ReceiptFileUpload();
+                        $newdata->rcptfu_rcpt_id = $idrcpmstr;
+                        $newdata->rcptfu_path = $fullfile;
+                        $newdata->rcptfu_is_ttd = 0;
+                        $newdata->save();
+                    }
+                }
+            }
+
             // Create Approval
             // $approval = Approval::orderBy('approval_order', 'ASC')->get();
 
@@ -161,47 +208,22 @@ class PurchaseOrderServices
             $prefix->save();
 
             DB::commit();
-            return true;
+            return [true, $idrcpmstr];
         } catch (Exception $e) {
             DB::rollback();
             Log::channel('savepo')->info($e);
-            return false;
+            return [false];
         }
     }
 
-    public function saveUploadFile($data)
+    public function sendmailapproval($receiptid)
     {
-        // TTD Driver
-        if ($data['signature'] != '') {
-            $imagettd = base64_decode($data['signature']);
-
-            if ($imagettd) {
-                $dataTime = date('Ymd_His');
-                $filename = $dataTime . '-TTD-' . $data['nik'] . '.png';
-
-                // Simpan File Upload pada Public
-                $savepath = public_path('/uploadttd/');
-
-                $fullfile = $savepath . $filename;
-                file_put_contents($fullfile, $imagettd);
-            }
-        }
-
-        // Upload File
-        if (array_key_exists('images', $data)) {
-            foreach ($data['images'] as $key => $dataImage) {
-                if ($dataImage->isValid()) {
-                    $dataTime = date('Ymd_His');
-                    $filename = $dataTime . '-' . $dataImage->getClientOriginalName();
-
-                    // Simpan File Upload pada Public
-                    $savepath = public_path('/uploadfile/');
-                    $dataImage->move($savepath, $filename);
-                }
-            }
-        }
+        $datareceipt = ReceiptMaster::with('getpo','getDetail','getUser')->findOrFail($receiptid);
+        SendEmailPOApproval::dispatch(
+            $datareceipt
+        );
     }
-
+    
     public function qxPurchaseOrderReceipt($data)
     {
         $ponbr = $data['getpo']['po_nbr'];
