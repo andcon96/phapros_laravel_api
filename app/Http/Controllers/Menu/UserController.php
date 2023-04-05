@@ -96,6 +96,7 @@ class UserController extends Controller
         }
         catch(Exception $err){
             DB::rollBack();
+            
             alert()->error('Error', 'User failed to created!');
             return redirect()->route('usermaint.index');
         }

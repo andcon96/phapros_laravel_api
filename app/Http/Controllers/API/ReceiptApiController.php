@@ -26,12 +26,7 @@ class ReceiptApiController extends Controller
     {
 
         $data = ReceiptDetail::query()->with(['getMaster.getpo','getMaster.getTransport',
-        'getMaster.getApprHistlast' => function($q){
-            $q->where('apphist_status','!=',null)->latest();
-        },
-        'getMaster.getApprHistfirst' => function($p){
-            $p->where('apphist_status','=',null)->first();
-        },'getMaster.getApprHistlast.getUser','getMaster.getApprHistfirst.getUser'
+        'getMaster.getAppr','getMaster.getAppr.getUser'
         
         ])->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
@@ -48,11 +43,9 @@ class ReceiptApiController extends Controller
         sum(rcptd_qty_rej) as sum_qty_rej,
         min(rcptd_batch) as rcptd_batch
         ');
-
-            
         
         $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get();
-         return $data;
+        return $data;
         
 
         
@@ -65,18 +58,29 @@ class ReceiptApiController extends Controller
         $user = $request->userid;
         $receiptnbr = $request->idrcpt;
         
-        $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
+        $receiptdata = ReceiptMaster::with('getpo')->where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->first();
+            $datahist = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->first();
+            if($datahist){
+                DB::rollback();
+                Log::channel('qxtendReceipt')->info('receipt already approved for receipt id: '.$receiptdata->id);
+                return 'approve failed';
+            }
+            $datahist = new ApprovalHist();
+            $datahist->apphist_user_id = $user;
+            $datahist->apphist_po_domain = $receiptdata->rcpt_domain;
+            $datahist->apphist_po_nbr = $receiptdata->getpo->po_nbr;
             $datahist->apphist_status = 'Approved';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
+            $datahist->apphist_receipt_id = $receiptdata->id;
             $datahist->save();
-            $nextappr = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
-            if(!$nextappr){
+            // $nextappr = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
+            // if(!$nextappr){
                 $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
                 
                 $qxtendreceipt = (new PurchaseOrderServices())->qxPurchaseOrderReceipt($datarcptmstr);
+                // $qxtendreceipt = 'success';
                 if($qxtendreceipt == 'success'){
                     $datarcptmstr->rcpt_status = 'finished';
                     
@@ -89,11 +93,11 @@ class ReceiptApiController extends Controller
                     Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datarcptmstr['rcpt_nbr'].'qxtend');
                     return 'approve failed';
                 }
-            }
-            else{
-                DB::commit();
-                return 'approve success';
-            }
+            // }
+            // else{
+                // DB::commit();
+                // return 'approve success';
+            // }
         }
         catch(Exception $err){
             DB::rollback();
@@ -109,10 +113,25 @@ class ReceiptApiController extends Controller
         $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         DB::beginTransaction();
         try{
-            $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->first();
+            $datahist = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->first();
+            if($datahist){
+                DB::rollback();
+                Log::channel('qxtendReceipt')->info('receipt already rejected for receipt id: '.$receiptdata->id);
+                return 'reject failed';
+            }
+            $datahist = new ApprovalHist();
+            $datahist->apphist_user_id = $user;
+            $datahist->apphist_po_domain = $receiptdata->rcpt_domain;
+            $datahist->apphist_po_nbr = $receiptdata->getpo->po_nbr;
             $datahist->apphist_status = 'Rejected';
             $datahist->apphist_approved_date = Carbon::now()->toDateString();
+            $datahist->apphist_receipt_id = $receiptdata->id;
             $datahist->save();
+
+            // $datahist = ApprovalHist::where('apphist_user_id',$user)->where('apphist_receipt_id',$receiptdata->id)->first();
+            // $datahist->apphist_status = 'Rejected';
+            // $datahist->apphist_approved_date = Carbon::now()->toDateString();
+            // $datahist->save();
             $datarcptmstr = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
             $datarcptmstr->rcpt_status = 'rejected';
             $datarcptmstr->save();

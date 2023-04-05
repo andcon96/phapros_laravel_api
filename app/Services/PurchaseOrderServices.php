@@ -208,7 +208,7 @@ class PurchaseOrderServices
 
         $domain = $data['rcpt_domain'];
         $qxwsa = Qxwsa::firstOrFail();
-
+        
         if (is_null($qxwsa->qx_url)) {
             return 'nourl';
         }
@@ -224,8 +224,8 @@ class PurchaseOrderServices
                         xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
                         <soapenv:Header>
                             <wsa:Action/>
-                            <wsa:To>urn:services-qad-com:PHAndroid</wsa:To>
-                            <wsa:MessageID>urn:services-qad-com::PHAndroid</wsa:MessageID>
+                            <wsa:To>urn:services-qad-com:QXPURCH</wsa:To>
+                            <wsa:MessageID>urn:services-qad-com::QXPURCH</wsa:MessageID>
                             <wsa:ReferenceParameters>
                             <qcom:suppressResponseDetail>true</qcom:suppressResponseDetail>
                             </wsa:ReferenceParameters>
@@ -355,6 +355,7 @@ class PurchaseOrderServices
         $xmlResp = simplexml_load_string($qdocResponse);
 
         $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
+        
         $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
 
         if ($qdocResult == "success" or $qdocResult == "warning") {

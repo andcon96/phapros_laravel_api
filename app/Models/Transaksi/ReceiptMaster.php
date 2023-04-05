@@ -49,11 +49,9 @@ class ReceiptMaster extends Model
     public function getLaporan(){
         return $this->hasOne(LaporanReceiptModel::class,'laporan_rcptnbr','rcpt_nbr')->latest();
     }
-    public function getApprHistlast(){
+    public function getAppr(){
         return $this->hasOne(ApprovalHist::class,'apphist_receipt_id','id');
     }
-    public function getApprHistfirst(){
-        return $this->hasOne(ApprovalHist::class,'apphist_receipt_id','id');
-    }
+
 
 }

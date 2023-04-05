@@ -23,7 +23,7 @@ class LaporanApiController extends Controller
     {
         $searchrcpt = '';
         
-        $data = ReceiptDetail::query()->with(['getMaster','getMaster.getpo','getMaster.getTransport','getMaster.getLaporan'])
+        $data = ReceiptDetail::query()->with(['getMaster','getMaster.getpo','getMaster.getTransport','getMaster.getLaporan.getUserLaporan'])
         ->selectRaw('
         min(rcptd_rcpt_id) as rcptd_rcpt_id,
         min(rcptd_lot) as rcptd_lot,
@@ -71,7 +71,7 @@ class LaporanApiController extends Controller
         $komplaindetail = $request->komplaindetail;
         $angkutan = $request->angkutan;
         $nopol = $request->nopol;
-        
+        $username = $request->username;
         
         DB::beginTransaction();
         try{
@@ -90,6 +90,7 @@ class LaporanApiController extends Controller
             $laporanreceipt->laporan_komplaindetail = $komplaindetail;
             $laporanreceipt->laporan_angkutan = $angkutan;
             $laporanreceipt->laporan_nopol = $nopol;
+            $laporanreceipt->laporan_anggota = $username;
             $laporanreceipt->save();
             DB::commit();
             return 'success';
