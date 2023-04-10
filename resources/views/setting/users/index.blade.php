@@ -46,6 +46,8 @@
         <th>Nama</th>
         <th>Username</th>
         <th width="7%">Akses Web</th>
+        <th width="7%">Receive Email</th>
+        <th width="7%">Approver</th>
         <th width="7%">Edit</th>
         
         <th width="7%">Delete</th>
@@ -93,6 +95,20 @@
             <label for="name" class="col-md-3 col-form-label text-md-right">Nama User</label>
             <div class="col-md-5">
               <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" autocomplete="off" autofocus required readonly>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="checkreceiveemail" class="col-md-3 col-form-label text-md-right">Receive Email</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="checkreceivemail" id="checkreceivemail" style="size: 20px">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="checkapprover" class="col-md-3 col-form-label text-md-right">Approver</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="checkapprover" id="checkapprover" style="size: 20px">
             </div>
           </div>
           
@@ -162,6 +178,20 @@
             </div>
           </div>
           
+          <div class="form-group row">
+            <label for="e_checkreceivemail" class="col-md-3 col-form-label text-md-right">Receive Email</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="e_checkreceivemail" id="e_checkreceivemail" style="size: 20px">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="e_checkapprover" class="col-md-3 col-form-label text-md-right">Approver</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="e_checkapprover" id="e_checkapprover" style="size: 20px">
+            </div>
+          </div>
+
           <div class="form-group row">
             <label for="e_accessweb" class="col-md-3 col-form-label text-md-right">Access Web</label>
             <div class="col-md-5 mt-auto mb-auto">
@@ -281,21 +311,23 @@
     if(document.getElementById('e_checkaccessweb').checked == true){
       document.getElementById('e_rowpass').style.display = '';
       document.getElementById('e_rowpassconf').style.display = '';
-      document.getElementById('e_password').required = true;
-      document.getElementById('e_password-confirm').required = true;
+      // document.getElementById('e_password').required = true;
+      // document.getElementById('e_password-confirm').required = true;
       
     }
     else{
       document.getElementById('e_rowpass').style.display = 'none';
       document.getElementById('e_rowpassconf').style.display = 'none';
-      document.getElementById('e_password').required = false;
-      document.getElementById('e_password-confirm').required = false;
+      // document.getElementById('e_password').required = false;
+      // document.getElementById('e_password-confirm').required = false;
     }
   });
 
   $(document).on('click','.editUser',function(){
     var username = $(this).data('uname');
     var accessweb = $(this).data('accessweb');
+    var receivemail = $(this).data('receivemail');
+    var approver = $(this).data('approver');
     
     document.getElementById('e_username').value = username;
     if(accessweb == 1){
@@ -303,6 +335,20 @@
     }
     else{
       document.getElementById('e_checkaccessweb').checked = false;
+      
+    }
+    if(receivemail == 1){
+      document.getElementById('e_checkreceivemail').checked = true;
+    }
+    else{
+      document.getElementById('e_checkreceivemail').checked = false;
+      
+    }
+    if(approver == 1){
+      document.getElementById('e_checkapprover').checked = true;
+    }
+    else{
+      document.getElementById('e_checkapprover').checked = false;
       
     }
  

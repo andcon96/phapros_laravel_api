@@ -66,7 +66,8 @@ class UserController extends Controller
         $username = $request->username;
         $password = null;
         $canaccessweb = '0';
-        
+        $checkapprover = '0';
+        $checkreceivemail = '0';
         if($request->checkaccessweb){
             $this->validate($request, [
                 'username' => 'required|unique:users',
@@ -78,6 +79,12 @@ class UserController extends Controller
             $password = $request->password;
             $canaccessweb = '1';         
         }
+        if($request->checkapprover){
+            $checkapprover = '1';
+        }
+        if($request->checkreceivemail){
+            $checkreceivemail = '1';
+        }
         DB::beginTransaction();
         
         try{
@@ -86,6 +93,8 @@ class UserController extends Controller
             $user->username = $request->username;
             $user->name = $request->name;
             $user->can_access_web = $canaccessweb;
+            $user->user_approver = $checkapprover;
+            $user->can_receive_email = $checkreceivemail;
             if($password != null){
                 $user->password = Hash::make($password);
             }
@@ -138,20 +147,36 @@ class UserController extends Controller
         $username = $request->username;
         $password = null;
         $canaccessweb = '0';
+        $checkapprover = '0';
+        $checkreceivemail = '0';
         
         if($request->checkaccessweb){
-            
-                $this->validate($request, [
+                $user = User2::where('username',$username)->first();       
+                if($user->password == null){
                     
-                    'password' => 'required|max:20',
-                    'password_confirmation' => 'required|max:20|same:password',
-                ], [
+                    $this->validate($request, [
                     
-                ]);
-                $password = $request->password;
+                        'password' => 'required|max:20',
+                        'password_confirmation' => 'required|max:20|same:password',
+                    ], [
+                        
+                    ]);
+                    $password = $request->password;
+                }
+
+                
                 $canaccessweb = '1';
             
         }
+        if($request->e_checkapprover){
+            $checkapprover = '1';
+        }
+        if($request->e_checkreceivemail){
+            $checkreceivemail = '1';
+        }
+        
+
+        
         DB::beginTransaction();
         try{
             $user = User2::where('username',$username)->first();
@@ -159,6 +184,9 @@ class UserController extends Controller
             if($password != null){
                 $user->password = Hash::make($password);
             }
+            $user->user_approver = $checkapprover;
+            $user->can_receive_email = $checkreceivemail;
+            
             $user->save();
             DB::commit();
             alert()->success('Success', 'User successfully updated!');
@@ -166,6 +194,7 @@ class UserController extends Controller
         }
         catch(Exception $err){
             DB::rollBack();
+            dd($err);
             alert()->error('Error', 'User failed to update!');
             return redirect()->route('usermaint.index');
         }
