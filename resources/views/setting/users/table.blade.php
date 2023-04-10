@@ -7,7 +7,7 @@
     <td data-title="Approver">{{ $show->user_approver == 1 ? 'Yes' : 'No' }}</td>
 
     <td data-title="Edit" class="action">
-      <a href="" class="editUser" data-id="{{$show->id}}" data-uname="{{$show->username}}" data-accessweb="{{$show->can_access_web}}" data-approver="{{$show->user_approver}}" data-receivemail="{{$show->user_receive_email}}" data-toggle='modal' data-target="#editModal"><i class="fas fa-edit"></i></a>
+      <a href="" class="editUser" data-id="{{$show->id}}" data-uname="{{$show->username}}" data-accessweb="{{$show->can_access_web}}" data-approver="{{$show->user_approver}}" data-receivemail="{{$show->can_receive_email}}" data-toggle='modal' data-target="#editModal"><i class="fas fa-edit"></i></a>
     </td>
 
     {{-- <td data-title="Pass" class="action">
