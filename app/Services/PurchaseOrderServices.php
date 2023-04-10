@@ -222,6 +222,8 @@ class PurchaseOrderServices
         SendEmailPOApproval::dispatch(
             $datareceipt
         );
+
+        return true;
     }
     
     public function qxPurchaseOrderReceipt($data)
