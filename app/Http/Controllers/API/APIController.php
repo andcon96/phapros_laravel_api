@@ -31,6 +31,7 @@ class APIController extends Controller
         //     return response()->json(['message' => 'Error', 'error'=>'Unauthorised'], 401);
         // }
         $usercheck = User2::where('username',request('nik'))->first();
+        
         if($usercheck){
             $user = User::where('nik', request('nik'))->first();
 
@@ -43,7 +44,8 @@ class APIController extends Controller
                             'message' => 'Sukses',
                             'user' => $user,
                             'username' => $user->id,
-                            'success' => $success
+                            'success' => $success,
+                            'user_approver' => $usercheck->user_approver
                         ],
                         $this->successStatus
                     );
