@@ -55,9 +55,15 @@ class PoApiController extends Controller
             $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
 
             $datareceipt = ReceiptMaster::with(['getDetailReject','getpo','getTransport','getLaporan.getUserLaporan'])->find($saveddata[1]);
+            $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
+            $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
+            $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
             return response()->json([
                 "message" => "Success",
-                "datareceipt" => $datareceipt
+                "datareceipt" => $datareceipt,
+                "totalArrival" => $totalArrival,
+                "totalApprove" => $totalApprove,
+                "totalReject" => $totalReject,
             ],200);
         }else{
             return response()->json([
@@ -75,6 +81,11 @@ class PoApiController extends Controller
 
     public function getreceipt(Request $request)
     {
+        $datareceipt = ReceiptMaster::with(['getDetailReject'])->find(15);
+        $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
+        $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
+        $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
 
+        dd($totalArrival, $totalApprove, $totalReject);
     }
 }

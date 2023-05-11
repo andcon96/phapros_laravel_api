@@ -21,6 +21,7 @@ class PoApiResources extends JsonResource
             'po_ship' => $this->po_ship,
             'po_site' => $this->po_site,
             'po_vend' => $this->po_vend,
+            'po_vend_desc' => $this->po_vend_desc,
             'po_ord_date' => $this->po_ord_date,
             'po_due_date' => $this->po_due_date,  
             'po_curr' => $this->po_curr,

@@ -81,6 +81,7 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
                 $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
                 $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
+                $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
                 // $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
                 $detailreceipt->rcptd_loc = $loc;
                 $detailreceipt->rcptd_site = $site;
@@ -151,6 +152,7 @@ class PurchaseOrderServices
             $angkutan->rcptt_is_position_single_desc  = $data['keterangan_material_position'];
             $angkutan->rcptt_is_segregated  = $data['is_segregated'] == 'null' ? 1 : $data['is_segregated'];
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
+            $angkutan->rcptt_angkutan_catatan = $data['angkutan_catatan'];
             $angkutan->save();
 
             // TTD Driver

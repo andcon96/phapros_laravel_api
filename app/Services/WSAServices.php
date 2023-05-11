@@ -111,8 +111,12 @@ class WSAServices
                     'po_due_date' => (string)$dataloop[0]->t_lvt_due,
                     'po_curr' => (string)$dataloop[0]->t_lvc_curr,
                     'po_status' => (string)$dataloop[0]->t_lvc_status,
+                    'po_vend_desc' => (string)$dataloop[0]->t_lvc_vend_desc,
                 ];
                 $idmstr = PurchaseOrderMaster::insertGetId($datamstr);
+            }else{
+                $pomstr->po_vend_desc = (string)$dataloop[0]->t_lvc_vend_desc;
+                $pomstr->save();
             }
 
             foreach ($dataloop as $datas) {

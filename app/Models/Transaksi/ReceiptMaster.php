@@ -54,8 +54,6 @@ class ReceiptMaster extends Model
     }
 
     public function getDetailReject(){
-        return $this->hasOne(ReceiptDetail::class,'rcptd_rcpt_id','id')->where('rcptd_qty_rej','>',0);
+        return $this->hasMany(ReceiptDetail::class,'rcptd_rcpt_id')->where('rcptd_qty_rej','>',0);
     }
-
-
 }
