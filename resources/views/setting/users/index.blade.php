@@ -48,6 +48,7 @@
         <th width="7%">Akses Web</th>
         <th width="7%">Receive Email</th>
         <th width="7%">Approver</th>
+        <th width="7%">Akses Menu IT</th>
         <th width="7%">Edit</th>
         
         <th width="7%">Delete</th>
@@ -116,6 +117,13 @@
             <label for="accessweb" class="col-md-3 col-form-label text-md-right">Access Web</label>
             <div class="col-md-5 mt-auto mb-auto">
               <input type="checkbox" name="checkaccessweb" id="checkaccessweb" style="size: 20px">
+            </div>
+          </div>
+
+          <div class="form-group row" id="rowaccessmenuit" style="display:none">
+            <label for="accessitmenu" class="col-md-3 col-form-label text-md-right">Access Menu IT</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="checkaccessitmenu" id="checkaccessitmenu" style="size: 20px">
             </div>
           </div>
 
@@ -197,6 +205,13 @@
             <div class="col-md-5 mt-auto mb-auto">
               <input type="checkbox" name="checkaccessweb" id="e_checkaccessweb" style="size: 20px">
               
+            </div>
+          </div>
+
+          <div class="form-group row" id="e_divitmenu" style="display: none">
+            <label for="e_accessitmenu" class="col-md-3 col-form-label text-md-right">Access Menu IT</label>
+            <div class="col-md-5 mt-auto mb-auto">
+              <input type="checkbox" name="e_checkaccessitmenu" id="e_checkaccessitmenu" style="size: 20px">
             </div>
           </div>
 
@@ -294,6 +309,7 @@
     if(document.getElementById('checkaccessweb').checked == true){
       document.getElementById('rowpass').style.display = '';
       document.getElementById('rowpassconf').style.display = '';
+      document.getElementById('rowaccessmenuit').style.display = '';
       document.getElementById('password').required = true;
       document.getElementById('password-confirm').required = true;
       
@@ -301,6 +317,7 @@
     else{
       document.getElementById('rowpass').style.display = 'none';
       document.getElementById('rowpassconf').style.display = 'none';
+      document.getElementById('rowaccessmenuit').style.display = 'none';
       document.getElementById('password').required = false;
       document.getElementById('password-confirm').required = false;
     }
@@ -309,8 +326,9 @@
   $(document).on('change','#e_checkaccessweb',function(){
     
     if(document.getElementById('e_checkaccessweb').checked == true){
-      document.getElementById('e_rowpass').style.display = '';
       document.getElementById('e_rowpassconf').style.display = '';
+      document.getElementById('e_rowpass').style.display = '';
+      document.getElementById('e_divitmenu').style.display = '';
       // document.getElementById('e_password').required = true;
       // document.getElementById('e_password-confirm').required = true;
       
@@ -318,6 +336,7 @@
     else{
       document.getElementById('e_rowpass').style.display = 'none';
       document.getElementById('e_rowpassconf').style.display = 'none';
+      document.getElementById('e_divitmenu').style.display = 'none';
       // document.getElementById('e_password').required = false;
       // document.getElementById('e_password-confirm').required = false;
     }
@@ -328,6 +347,7 @@
     var accessweb = $(this).data('accessweb');
     var receivemail = $(this).data('receivemail');
     var approver = $(this).data('approver');
+    var accessmenuit = $(this).data('accessmenuit');
     
     
     document.getElementById('e_username').value = username;
@@ -350,6 +370,13 @@
     }
     else{
       document.getElementById('e_checkapprover').checked = false;
+      
+    }
+    if(accessmenuit == 1){
+      document.getElementById('e_checkaccessitmenu').checked = true;
+    }
+    else{
+      document.getElementById('e_checkaccessitmenu').checked = false;
       
     }
  

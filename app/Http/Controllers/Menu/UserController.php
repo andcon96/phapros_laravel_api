@@ -68,6 +68,7 @@ class UserController extends Controller
         $canaccessweb = '0';
         $checkapprover = '0';
         $checkreceivemail = '0';
+        $checkaccessitmenu = '0';
         if($request->checkaccessweb){
             $this->validate($request, [
                 'username' => 'required|unique:users',
@@ -85,16 +86,21 @@ class UserController extends Controller
         if($request->checkreceivemail){
             $checkreceivemail = '1';
         }
+        if($request->checkaccessitmenu){
+            $checkaccessitmenu = '1';
+        }
         DB::beginTransaction();
         
         try{
             $user = User2::where('username',$username)->first();
             $user = new User2();
+            
             $user->username = $request->username;
             $user->name = $request->name;
             $user->can_access_web = $canaccessweb;
             $user->user_approver = $checkapprover;
             $user->can_receive_email = $checkreceivemail;
+            $user->can_access_it_menu = $checkaccessitmenu;
             if($password != null){
                 $user->password = Hash::make($password);
             }
@@ -149,6 +155,7 @@ class UserController extends Controller
         $canaccessweb = '0';
         $checkapprover = '0';
         $checkreceivemail = '0';
+        $checkaccessitmenu = '0';
         
         if($request->checkaccessweb){
                 $user = User2::where('username',$username)->first();       
@@ -174,7 +181,9 @@ class UserController extends Controller
         if($request->e_checkreceivemail){
             $checkreceivemail = '1';
         }
-        
+        if($request->e_checkaccessitmenu){
+            $checkaccessitmenu = '1';
+        }
 
         
         DB::beginTransaction();
@@ -184,8 +193,10 @@ class UserController extends Controller
             if($password != null){
                 $user->password = Hash::make($password);
             }
+            
             $user->user_approver = $checkapprover;
             $user->can_receive_email = $checkreceivemail;
+            $user->can_access_it_menu = $checkaccessitmenu;
             
             $user->save();
             DB::commit();
