@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Menu;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Prefix;
+use App\Models\Master\PrefixIMR;
 use Illuminate\Http\Request;
 
 class PrefixController extends Controller
@@ -16,9 +17,11 @@ class PrefixController extends Controller
     public function index()
     {
         $prefix = Prefix::first();
+
+        $prefiximr = PrefixIMR::get();
         
 
-        return view('setting.prefix.index',compact('prefix'));
+        return view('setting.prefix.index',compact('prefix','prefiximr'));
         //
     }
 
@@ -41,12 +44,20 @@ class PrefixController extends Controller
      */
     public function store(Request $request)
     {
-     
         $prefix = Prefix::firstOrNew(['id'=>'1']);
         $prefix->prefix_rcpt_pr = $request->prefixrcpt;
         $prefix->prefix_rcpt_rn = $request->rnrcpt;
         
         $prefix->save();
+
+        if($request->prefix){
+            foreach($request->prefix as $key => $datas){
+                $prefiximr = new PrefixIMR();
+                $prefiximr->pin_prefix = $datas;
+                $prefiximr->pin_rn = 0;
+                $prefiximr->save();
+            }
+        }
 
         alert()->success('Success', 'Prefix Updated');
         return back();

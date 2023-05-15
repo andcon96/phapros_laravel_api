@@ -14,7 +14,7 @@ class AddAngkutanCatatanToRcptTransportTable extends Migration
     public function up()
     {
         Schema::table('rcpt_transport', function (Blueprint $table) {
-            $table->string('rcptt_angkutan_catatan')->after('rcptt_is_segregated_desc')->nullabel();
+            $table->string('rcptt_angkutan_catatan')->after('rcptt_is_segregated_desc')->nullable();
         });
     }
 

@@ -29,16 +29,30 @@
                 </div>
             </div>
             <div class="form-group row">
-                <table class="table table-bordered" id="dataTable" width="50%" cellspacing="0">
+                <table class="table table-bordered offset-md-2 col-md-8" id="dataTable" width="50%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Username</th>
+                            <th>Prefix IMR</th>
+                            <th>Running Number</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-
+                    <tbody id="bodyprefiximr">
+                        @foreach ($prefiximr as $prefiximrs)
+                            <tr>
+                                <td>{{$prefiximrs->pin_prefix}}</td>
+                                <td>{{$prefiximrs->pin_rn}}</td>
+                                <td></td>
+                            </tr>
+                        @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                          <td colspan="3">
+                            <input type="button" class="btn btn-lg btn-block btn-focus" id="addrow" value="Add Row" style="background-color:#1234A5; color:white; font-size:16px" />
+                          </td>
+                        </tr>
+                      </tfoot>
                 </table>
             </div>
 
@@ -59,5 +73,25 @@
             document.getElementById('btnconf').style.display = 'none';
             document.getElementById('btnloading').style.display = '';
         });
+
+        $("#addrow").on('click', function(){
+            var newRow = $("<tr>");
+            var cols = "";
+
+            cols += '<td data-title="prefix[]" data-label="Prefix"><input type="text" class="form-control" autocomplete="off" name="prefix[]" style="height:37px" required/></td>';
+
+            cols += '<td data-title="rn[]" data-label="Running Number"><input type="text" class="form-control rn" autocomplete="off" name="rn[]" value="000000" style="height:37px" min="1" step="1" required readonly/></td>';
+            
+            cols += '<td data-title="Action"><button class="ibtnDel btn btn-danger btn-focus" ><i class="fa fa-trash"></i></button></td>';
+            cols += '</tr>'
+            newRow.append(cols);
+            $("#bodyprefiximr").append(newRow);
+        });
+
+        $("table").on("click", ".ibtnDel", function(event) {
+            $(this).closest("tr").remove();
+            counter -= 1
+        });
+
     </script>
 @endsection

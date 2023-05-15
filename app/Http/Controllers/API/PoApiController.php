@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LocationResources;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\WsaPoResources;
+use App\Models\Master\PrefixIMR;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Services\PurchaseOrderServices;
@@ -52,7 +53,7 @@ class PoApiController extends Controller
         if($saveddata[0] == true){
 
             // 0 => Status True/False , 1 => Rcpt ID
-            $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
+            // $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
 
             $datareceipt = ReceiptMaster::with(['getDetailReject','getpo','getTransport','getLaporan.getUserLaporan'])->find($saveddata[1]);
             $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
@@ -77,6 +78,13 @@ class PoApiController extends Controller
         $data = (new WSAServices())->wsaloc();
 
         return LocationResources::collection($data);
+    }
+
+    public function getprefiximr(Request $request)
+    {
+        $data = PrefixIMR::get();
+
+        return response()->json(['data' => $data],200);
     }
 
     public function getreceipt(Request $request)

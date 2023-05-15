@@ -26,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     route::post('savepo', [PoApiController::class, 'savepo']);
     route::get('wsaloc', [PoApiController::class, 'wsaloc']);
     route::get('testrec', [PoApiController::class, 'getreceipt']);
+    route::get('getprefiximr', [PoApiController::class, 'getprefiximr']);
 
     
     //laporan

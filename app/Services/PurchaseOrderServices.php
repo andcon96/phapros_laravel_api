@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Jobs\SendEmailPOApproval;
 use App\Models\Master\Approval;
 use App\Models\Master\Prefix;
+use App\Models\Master\PrefixIMR;
 use App\Models\Master\Qxwsa;
 use App\Models\Transaksi\ApprovalHist;
 use App\Models\Transaksi\PurchaseOrderMaster;
@@ -91,9 +92,40 @@ class PurchaseOrderServices
             }
 
             // Save Checklist
+            // Validasi IMO No apakah sudah ada di DB & Update Prefix RN IMR
+            $imrno = $data['imrno'];
+            $yearnow = Carbon::now()->format('y');
+
+            $cekchecklist = ReceiptChecklist::where('rcptc_imr_nbr',$data['imrno'])->first();
+            if($cekchecklist){
+                $totalrn = 1;
+                $newrn = 0;
+                $allprefix = PrefixIMR::get();
+                foreach($allprefix as $allprefixs){
+                    log::channel('savepo')->info($allprefixs);
+                    // Cek Tahun Sama / ga
+                    if($yearnow == substr($allprefixs->pin_rn,0,2)){
+                        log::channel('savepo')->info('masuk yearnow == substr');
+                        // Hitung Total Tahun Berjalan
+                        $totalrn += intval(substr($allprefixs->pin_rn,2,4));
+                        log::channel('savepo')->info('totalrn = '.$totalrn);
+                        
+                        // Hitung Total Tahun Berjalan sesuai prefix inputan.
+                        if($allprefixs->pin_prefix == substr($imrno,0,2)){    
+                            log::channel('savepo')->info('masuk sesuai prefix inputan');
+                            $newrn = intval(substr($allprefixs->pin_rn,2,4)) + 1;
+                            $newrn = str_pad($newrn,2,0,STR_PAD_LEFT);
+                            log::channel('savepo')->info('newrn = '.$newrn);    
+                        }
+                    }
+                }
+                $totalrn = str_pad($totalrn,3,0,STR_PAD_LEFT);
+
+                $imrno = substr($imrno,0,2). '/' . $newrn . '/' . $totalrn;
+            }
             $checklist = new ReceiptChecklist();
             $checklist->rcptc_rcpt_id = $idrcpmstr;
-            $checklist->rcptc_imr_nbr = $data['imrno'];
+            $checklist->rcptc_imr_nbr = $imrno;
             $checklist->rcptc_article_nbr = $data['articleno'];
             $checklist->rcptc_imr_date = $data['imrdate'];
             $checklist->rcptc_arrival_date = $data['arrivaldate'];
@@ -102,6 +134,18 @@ class PurchaseOrderServices
             $checklist->rcptc_manufacturer = $data['manufacturer'];
             $checklist->rcptc_country = $data['country'];
             $checklist->save();
+
+            // Save Prefix IMR
+            $usedprefix = PrefixIMR::where('pin_prefix',substr($imrno,0,2))->first();
+            if($usedprefix){
+                if(substr($usedprefix->pin_rn,0,2) == $yearnow){
+                    $newrn = $usedprefix->pin_rn + 1;
+                    $usedprefix->pin_rn = $newrn;
+                }else{
+                    $usedprefix->pin_rn = $yearnow.'0001';
+                }
+                $usedprefix->save();
+            }
 
             // Save Document
             $document = new ReceiptDocument();
