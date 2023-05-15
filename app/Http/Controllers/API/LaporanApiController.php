@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\ReceiptApiResources;
 use App\Http\Resources\WsaPoResources;
+use App\Models\Master\Prefix;
 use App\Models\Transaksi\LaporanReceiptModel;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptDetail;
@@ -78,7 +79,10 @@ class LaporanApiController extends Controller
         
         DB::beginTransaction();
         try{
+            $prefix = Prefix::first();
+            $newprefix = $prefix->rcpt_pr.$prefix->rcpt_rn;
             $laporanreceipt = new LaporanReceiptModel();
+            $laporanreceipt->laporan_runningnumber = $newprefix;
             $laporanreceipt->laporan_rcptnbr = $rcptnbr;
             $laporanreceipt->laporan_ponbr = $ponbr;
             $laporanreceipt->laporan_part = $part;

@@ -32,6 +32,7 @@ class ReceiptApiController extends Controller
             if($request->rcptnbr){
                 $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
             }
+            $r->where('rcpt_status','=','created');
         })
         ->selectRaw('
         rcptd_rcpt_id,
