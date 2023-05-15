@@ -45,8 +45,8 @@
       <tr>
         <th>Nama</th>
         <th>Username</th>
-        <th width="7%">Akses Web</th>
-        <th width="7%">Receive Email</th>
+        <th width="15%">Akses Web</th>
+        <th width="15%">Receive Email</th>
         <th width="7%">Approver</th>
         <th width="7%">Akses Menu IT</th>
         <th width="7%">Edit</th>

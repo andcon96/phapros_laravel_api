@@ -24,6 +24,7 @@ class LaporanApiController extends Controller
     {
         $searchrcpt = '';
         
+
         $data = ReceiptDetail::query()->with(['getMaster','getMaster.getpo','getMaster.getTransport','getMaster.getLaporan.getUserLaporan'])
         ->selectRaw('
         min(rcptd_rcpt_id) as rcptd_rcpt_id,
@@ -34,7 +35,8 @@ class LaporanApiController extends Controller
         sum(rcptd_qty_appr) as sum_qty_appr,
         sum(rcptd_qty_rej) as sum_qty_rej
         ')
-        ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_part');
+        ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_rcpt_id')->groupBy('rcptd_part');
+        
         if($request->receiptnbr){
             $searchrcpt = ReceiptMaster::where('rcpt_nbr','=',$request->receiptnbr)->selectRaw('id')->first();
             if(!$searchrcpt){
@@ -42,6 +44,7 @@ class LaporanApiController extends Controller
             }
             $data = $data->where('rcptd_rcpt_id','=',$searchrcpt->id);
         }
+
         $data = $data->get();
          
 

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LocationResources;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\WsaPoResources;
 use App\Models\Transaksi\PurchaseOrderMaster;
+use App\Models\Transaksi\ReceiptMaster;
 use App\Services\PurchaseOrderServices;
 use App\Services\WSAServices;
 use Illuminate\Http\Request;
@@ -25,6 +27,9 @@ class PoApiController extends Controller
         if($request->search){
             $data->where('po_nbr','LIKE','%'.$request->search.'%')
                  ->orWhere('po_vend','LIKE','%'.$request->search.'%');
+        }else{
+            // Request Phapros -> Data kosong jika belum search.
+            $data->where('po_nbr','');
         }
 
         $data = $data->paginate(10);
@@ -49,13 +54,38 @@ class PoApiController extends Controller
             // 0 => Status True/False , 1 => Rcpt ID
             $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
 
+            $datareceipt = ReceiptMaster::with(['getDetailReject','getpo','getTransport','getLaporan.getUserLaporan'])->find($saveddata[1]);
+            $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
+            $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
+            $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
             return response()->json([
-                "message" => "Success"
+                "message" => "Success",
+                "datareceipt" => $datareceipt,
+                "totalArrival" => $totalArrival,
+                "totalApprove" => $totalApprove,
+                "totalReject" => $totalReject,
             ],200);
         }else{
             return response()->json([
                 "message" => "Failed"
             ],400);
         }
+    }
+
+    public function wsaloc(Request $request)
+    {
+        $data = (new WSAServices())->wsaloc();
+
+        return LocationResources::collection($data);
+    }
+
+    public function getreceipt(Request $request)
+    {
+        $datareceipt = ReceiptMaster::with(['getDetailReject'])->find(15);
+        $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
+        $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
+        $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
+
+        dd($totalArrival, $totalApprove, $totalReject);
     }
 }

@@ -68,6 +68,10 @@ class PurchaseOrderServices
 
             // Save Receipt Detail
             foreach ($newdata as $key => $datas) {
+                $arraysiteloc = explode(' || ', $datas->t_lvc_loc);
+                $site = $arraysiteloc[0] ?? '';
+                $loc = $arraysiteloc[1] ?? '';
+
                 $detailreceipt = new ReceiptDetail();
                 $detailreceipt->rcptd_rcpt_id = $idrcpmstr;
                 $detailreceipt->rcptd_line = $datas->t_lvi_line;
@@ -77,7 +81,10 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
                 $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
                 $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
-                $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
+                $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
+                // $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
+                $detailreceipt->rcptd_loc = $loc;
+                $detailreceipt->rcptd_site = $site;
                 $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
                 $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
                 $detailreceipt->save();
@@ -114,11 +121,11 @@ class PurchaseOrderServices
             // Save Kemasan
             $kemasan = new ReceiptKemasan();
             $kemasan->rcptk_rcpt_id = $idrcpmstr;
-            $kemasan->rcptk_kemasan_sacdos = $data['kemasan_sacdos'] ? 1 : 0;
+            $kemasan->rcptk_kemasan_sacdos = $data['kemasan_sacdos'] == 'true' ? 1 : 0;
             $kemasan->rcptk_kemasan_sacdos_desc = $data['is_damage_kemasan_sacdos'];
-            $kemasan->rcptk_kemasan_drumvat = $data['kemasan_drumvat'] ? 1 : 0;
+            $kemasan->rcptk_kemasan_drumvat = $data['kemasan_drumvat'] == 'true' ? 1 : 0;
             $kemasan->rcptk_kemasan_drumvat_desc = $data['is_damage_kemasan_drumvat'];
-            $kemasan->rcptk_kemasan_palletpeti = $data['kemasan_palletpeti'] ? 1 : 0;
+            $kemasan->rcptk_kemasan_palletpeti = $data['kemasan_palletpeti'] == 'true' ? 1 : 0;
             $kemasan->rcptk_kemasan_palletpeti_desc = $data['is_damage_kemasan_palletpeti'];
             $kemasan->rcptk_is_clean = $data['is_clean'] == 'null' ? 1 : $data['is_clean'];
             $kemasan->rcptk_is_clean_desc = $data['keterangan_is_clean'];
@@ -145,6 +152,7 @@ class PurchaseOrderServices
             $angkutan->rcptt_is_position_single_desc  = $data['keterangan_material_position'];
             $angkutan->rcptt_is_segregated  = $data['is_segregated'] == 'null' ? 1 : $data['is_segregated'];
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
+            $angkutan->rcptt_angkutan_catatan = $data['angkutan_catatan'];
             $angkutan->save();
 
             // TTD Driver
