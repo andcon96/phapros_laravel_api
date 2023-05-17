@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="{{ url('phapros/vendor/chartist/css/chartist.min.css') }}">
     <link href="{{ url('phapros/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
     <link href="{{ url('phapros/css/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url('/phapros/vendor/select2/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ url('/phapros/css/imicustom.css') }}">
+    <!-- Pick date -->
+    <link rel="stylesheet" href="{{ url('/phapros/vendor/pickadate/themes/default.css') }}">
+    <link rel="stylesheet" href="{{ url('/phapros/vendor/pickadate/themes/default.date.css') }}">
     <link href="https://cdn.lineicons.com/2.0/LineIcons.css" rel="stylesheet">
 
 </head>
@@ -944,53 +949,10 @@
                                         fill="#000000" fill-rule="nonzero" />
                                 </g>
                             </svg>
-                            <span class="nav-text">Apps</span>
+                            <span class="nav-text">Purchase Order</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="./app-profile.html">Profile</a></li>
-                            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Email</a>
-                                <ul aria-expanded="false">
-                                    <li><a href="./email-compose.html">Compose</a></li>
-                                    <li><a href="./email-inbox.html">Inbox</a></li>
-                                    <li><a href="./email-read.html">Read</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="./app-calender.html">Calendar</a></li>
-                            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Shop</a>
-                                <ul aria-expanded="false">
-                                    <li><a href="./ecom-product-grid.html">Product Grid</a></li>
-                                    <li><a href="./ecom-product-list.html">Product List</a></li>
-                                    <li><a href="./ecom-product-detail.html">Product Details</a></li>
-                                    <li><a href="./ecom-product-order.html">Order</a></li>
-                                    <li><a href="./ecom-checkout.html">Checkout</a></li>
-                                    <li><a href="./ecom-invoice.html">Invoice</a></li>
-                                    <li><a href="./ecom-customers.html">Customers</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                    <rect x="0" y="0" width="24" height="24" />
-                                    <path
-                                        d="M4.00246329,12.2004927 L13,14 L13,4.06189375 C16.9463116,4.55399184 20,7.92038235 20,12 C20,16.418278 16.418278,20 12,20 C7.64874861,20 4.10886412,16.5261253 4.00246329,12.2004927 Z"
-                                        fill="#000000" opacity="0.3" />
-                                    <path
-                                        d="M3.0603968,10.0120794 C3.54712466,6.05992157 6.91622084,3 11,3 L11,11.6 L3.0603968,10.0120794 Z"
-                                        fill="#000000" />
-                                </g>
-                            </svg>
-                            <span class="nav-text">Charts</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./chart-flot.html">Flot</a></li>
-                            <li><a href="./chart-morris.html">Morris</a></li>
-                            <li><a href="./chart-chartjs.html">Chartjs</a></li>
-                            <li><a href="./chart-chartist.html">Chartist</a></li>
-                            <li><a href="./chart-sparkline.html">Sparkline</a></li>
-                            <li><a href="./chart-peity.html">Peity</a></li>
+                            <li><a href="{{ route('purchaseorder.index') }}">PO Browse</a></li>
                         </ul>
                     </li>
                     <li class="nav-label">Master</li>
@@ -1010,8 +972,8 @@
                             <span class="nav-text">Master Web</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="{{route('usermaint.index')}}">User Master</a></li>
-                            <li><a href="{{route('prefixmaint.index')}}">Prefix Master</a></li>
+                            <li><a href="{{ route('usermaint.index') }}">User Master</a></li>
+                            <li><a href="{{ route('prefixmaint.index') }}">Prefix Master</a></li>
                         </ul>
                     </li>
 
@@ -1031,7 +993,7 @@
                             <span class="nav-text">Master QAD</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="{{url('qxwsa')}}">WSA Qxtend Master</a></li>
+                            <li><a href="{{ url('qxwsa') }}">WSA Qxtend Master</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -1091,9 +1053,26 @@
     <script src="{{ url('/phapros/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
     <script src="{{ url('/phapros/vendor/chart.js/Chart.bundle.min.js') }}"></script>
     <script src="{{ url('/phapros/js/custom.min.js') }}"></script>
+    <script src="{{ url('/phapros/js/deznav-init.js') }}"></script>
     <!-- Apex Chart -->
     {{-- <script src="./vendor/apexchart/apexchart.js"></script> --}}
     <script src="{{ url('/phapros/vendor/apexchart/apexchart.js') }}"></script>
+
+    <!-- Select 2 -->
+    {{-- <script src="./vendor/select2/js/select2.full.min.js"></script>
+    <script src="./js/plugins-init/select2-init.js"></script> --}}
+    <script src="{{ url('/phapros/vendor/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ url('/phapros/js/plugins-init/select2-init.js') }}"></script>
+
+    <script src="{{ url('/phapros/vendor/svganimation/vivus.min.js') }}"></script>
+    <script src="{{ url('/phapros/vendor/svganimation/svg.animation.js') }}"></script>
+
+    <!-- Date Picker -->
+    <script src="{{ url('/phapros/vendor/pickadate/picker.js') }}"></script>
+    <script src="{{ url('/phapros/vendor/pickadate/picker.time.js') }}"></script>
+    <script src="{{ url('/phapros/vendor/pickadate/picker.date.js') }}"></script>
+
+    <script src="{{ url('/phapros/js/plugins-init/pickadate-init.js') }}"></script>
 
     <!-- Vectormap -->
     <!-- Chart piety plugin files -->
@@ -1112,6 +1091,8 @@
     <script src="./vendor/svganimation/svg.animation.js"></script> --}}
     <script src="{{ url('/phapros/vendor/svganimation/vivus.min.js') }}"></script>
     <script src="{{ url('/phapros/vendor/svganimation/svg.animation.js') }}"></script>
+
+
 
     @yield('scripts')
 

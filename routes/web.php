@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Menu\PrefixController;
 use App\Http\Controllers\Menu\UserController;
 use App\Http\Controllers\QxwsaController;
+use App\Http\Controllers\Transaksi\PurchaseOrderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,13 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
+    //================================
+    // Transaksi
+    //================================
+    Route::resource('purchaseorder',PurchaseOrderController::class);
+    Route::get('exportpo',[PurchaseOrderController::class, 'exportpo'])->name('ExportPO');
+    
+
     //================================
     // Logout & Home 123
     //================================

@@ -197,6 +197,8 @@ class PurchaseOrderServices
             $angkutan->rcptt_is_segregated  = $data['is_segregated'] == 'null' ? 1 : $data['is_segregated'];
             $angkutan->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
             $angkutan->rcptt_angkutan_catatan = $data['angkutan_catatan'];
+            $angkutan->rcptt_kelembapan = $data['kelembapan'];
+            $angkutan->rcptt_suhu = $data['suhu'];
             $angkutan->save();
 
             // TTD Driver
