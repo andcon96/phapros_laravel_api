@@ -102,20 +102,15 @@ class PurchaseOrderServices
                 $newrn = 0;
                 $allprefix = PrefixIMR::get();
                 foreach($allprefix as $allprefixs){
-                    log::channel('savepo')->info($allprefixs);
                     // Cek Tahun Sama / ga
                     if($yearnow == substr($allprefixs->pin_rn,0,2)){
-                        log::channel('savepo')->info('masuk yearnow == substr');
                         // Hitung Total Tahun Berjalan
                         $totalrn += intval(substr($allprefixs->pin_rn,2,4));
-                        log::channel('savepo')->info('totalrn = '.$totalrn);
                         
                         // Hitung Total Tahun Berjalan sesuai prefix inputan.
                         if($allprefixs->pin_prefix == substr($imrno,0,2)){    
-                            log::channel('savepo')->info('masuk sesuai prefix inputan');
                             $newrn = intval(substr($allprefixs->pin_rn,2,4)) + 1;
-                            $newrn = str_pad($newrn,2,0,STR_PAD_LEFT);
-                            log::channel('savepo')->info('newrn = '.$newrn);    
+                            $newrn = str_pad($newrn,2,0,STR_PAD_LEFT);  
                         }
                     }
                 }
