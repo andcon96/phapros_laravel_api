@@ -6,8 +6,6 @@
             <div class="card-body">
                 <form class="form-horizontal" method="get" action="{{ route('purchaseorder.index') }}">
                     <div class="form-group row col-md-12">
-
-
                         <div class="form-group row col-md-12">
                             <label for="domain" class="col-md-2 col-form-label text-md-right">{{ __('Domain') }}</label>
                             <div class="col-md-4 col-lg-3">
@@ -73,9 +71,13 @@
                                 <button class="btn btn-outline-secondary" class="btn bt-ref" id="btnsearch"><span
                                         class="btn-icon-left text-secondary"><i class="fa fa-search color-secondary"></i>
                                     </span>Search</button>
-                                <button type="button" class="btn btn-outline-secondary" id="btnexport"><span
+                                    
+                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter"><span
+                                    class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                                </span>Download</button>
+                                {{-- <button type="button" class="btn btn-outline-secondary" id="btnexport"><span
                                         class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
-                                    </span>Download</button>
+                                    </span>Download</button> --}}
                             </div>
                         </div>
 
@@ -106,7 +108,35 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Export Excel</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12" style="text-align:center;">
+                        <button type="button" class="btn btn-outline-secondary" id="btnexport" data-tipeexport="1"><span
+                            class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                        </span>Download PO Detail</button>
+                    </div>
+                    <div class="col-md-12 mt-3" style="text-align: center;">
+                        <button type="button" class="btn btn-outline-secondary" id="btnexport" data-tipeexport="2"><span
+                            class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                        </span>Download Approval Hist</button>
+                    </div>
+                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="loader" class="lds-dual-ring hidden overlay"></div>
@@ -139,6 +169,7 @@
         
         $(document).on('click', '#btnexport', function(e) {
             e.preventDefault();
+            let tipeexport = $(this).data('tipeexport');
             let domain = $('#domain').val();
             let ponbr = $('#ponbr').val();
             let vendor = $('#vendor').val();
@@ -146,7 +177,7 @@
             let start_orddate = $('#start_orddate').val();
             let end_orddate = $('#end_orddate').val();
 
-            let datarequest  = "?domain=:domain&ponbr=:ponbr&vendor=:vendor&shipto=:shipto&start_orddate=:start_orddate&end_orddate=:end_orddate"; 
+            let datarequest  = "?domain=:domain&ponbr=:ponbr&vendor=:vendor&shipto=:shipto&start_orddate=:start_orddate&end_orddate=:end_orddate&tipe=:tipe"; 
             
             datarequest = datarequest.replace(':domain', domain);
             datarequest = datarequest.replace(':ponbr', ponbr);
@@ -154,6 +185,7 @@
             datarequest = datarequest.replace(':shipto', shipto);
             datarequest = datarequest.replace(':start_orddate', start_orddate);
             datarequest = datarequest.replace(':end_orddate', end_orddate);
+            datarequest = datarequest.replace(':tipe',tipeexport);
             
             
             let url = "{{ route('ExportPO') }}" + datarequest;
