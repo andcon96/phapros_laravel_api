@@ -954,6 +954,7 @@
                         </a>
                         <ul aria-expanded="false">
                             <li><a href="{{ route('purchaseorder.index') }}">PO Browse</a></li>
+                            <li><a href="{{ route('rencanaProd.index') }}">Rencana Produksi</a></li>
                         </ul>
                     </li>
                     <li class="nav-label">Master</li>
