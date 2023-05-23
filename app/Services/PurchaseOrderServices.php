@@ -212,7 +212,7 @@ class PurchaseOrderServices
 
                     $newdata = new ReceiptFileUpload();
                     $newdata->rcptfu_rcpt_id = $idrcpmstr;
-                    $newdata->rcptfu_path = $fullfile;
+                    $newdata->rcptfu_path = '/uploadttd/'.$filename;
                     $newdata->rcptfu_is_ttd = 1;
                     $newdata->save();
                 }
@@ -233,7 +233,7 @@ class PurchaseOrderServices
                         
                         $newdata = new ReceiptFileUpload();
                         $newdata->rcptfu_rcpt_id = $idrcpmstr;
-                        $newdata->rcptfu_path = $fullfile;
+                        $newdata->rcptfu_path = '/uploadfile/'.$filename;
                         $newdata->rcptfu_is_ttd = 0;
                         $newdata->save();
                     }
