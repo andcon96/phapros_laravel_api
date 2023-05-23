@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Transaksi;
 
+use App\Exports\ExportPOApprovalHistory;
 use App\Exports\PurchaseOrderExport;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi\PurchaseOrderMaster;
@@ -46,6 +47,12 @@ class PurchaseOrderController extends Controller
     }
     
     public function exportpo(Request $request){
-        return Excel::download(new PurchaseOrderExport($request->domain, $request->ponbr, $request->vendor, $request->shipto, $request->start_orddate, $request->end_orddate), 'Customer Order.xlsx');
+        
+        if($request->tipe == 1){
+            return Excel::download(new PurchaseOrderExport($request->domain, $request->ponbr, $request->vendor, $request->shipto, $request->start_orddate, $request->end_orddate), 'Purchase Order.xlsx');
+        }elseif($request->tipe == 2){
+            return Excel::download(new ExportPOApprovalHistory($request->domain, $request->ponbr, $request->vendor, $request->shipto, $request->start_orddate, $request->end_orddate), 'Approval History.xlsx');
+        }
+        
     }
 }
