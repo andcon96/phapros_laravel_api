@@ -6,6 +6,7 @@ use App\Http\Controllers\Menu\PrefixController;
 use App\Http\Controllers\Menu\UserController;
 use App\Http\Controllers\QxwsaController;
 use App\Http\Controllers\Transaksi\PurchaseOrderController;
+use App\Http\Controllers\RencanaProduksiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('prefixmaint', PrefixController::class);
     //qxwsa maintenance
     Route::resource('qxwsa', QxwsaController::class);
+
+    //Report Rencana Produksi
+    Route::resource('rencanaProd', RencanaProduksiController::class);
     
 });
 

@@ -129,6 +129,11 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/qxtendReceipt.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+        ],
+        'loadRencanaProduksi' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/loadRencanaProduksi.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
         ]
     ],
 

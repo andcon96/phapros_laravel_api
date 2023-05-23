@@ -19,6 +19,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url('phapros/images/favicon.png') }}">
     <link href="{{ url('phapros/vendor/jqvmap/css/jqvmap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('phapros/vendor/chartist/css/chartist.min.css') }}">
+    <link rel="stylesheet" href="{{url('phapros/vendor/select2/css/select2.min.css')}}">
     <link href="{{ url('phapros/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
     <link href="{{ url('phapros/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('/phapros/vendor/select2/css/select2.min.css') }}">
@@ -1047,7 +1048,9 @@
     <script src="./vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="./vendor/chart.js/Chart.bundle.min.js"></script>
     <script src="./js/custom.min.js"></script> --}}
-
+{{-- 
+    <script src="{{url('/phapros/vendor/global/global.min.js')}}"></script>
+    <script src="{{url('/phapros/js/custom.min.js')}}"></script> --}}
 
     <script src="{{ url('/phapros/vendor/global/global.min.js') }}"></script>
     <script src="{{ url('/phapros/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
