@@ -77,7 +77,7 @@
     </tr>
 @empty
     <tr>
-        <td colspan="{{$totalPeriode * 2 + 8}}" style="color:red">
+        <td colspan="{{$totalPeriode == 0 ? 11 : $totalPeriode * 2 + 8}}" style="color:red">
             <center>No Data Available</center>
         </td>
     </tr>
