@@ -83,12 +83,20 @@
                                 </div>
                                 <div class="col-md-1 col-sm-1"></div>
                             </div>
-                            <div class="form-group row justify-content-end">
-                                <div class="col-md-2 col-sm-2"></div>
-                                <button type="button" class="btn btn-outline-primary">Clear</button>
-                                &nbsp;
-                                <button type="submit" class="btn btn-primary">Search</button>
-                                <div class="col-md-2 col-sm-2"></div>
+                            <div class="row">
+                                <div class="col-md-1 col-sm-1"></div>
+                                <div class="col-md-5 col-sm-5"></div>
+                                <div class="col-md-5 col-sm-5">
+                                    <div class="form-group row">
+                                        <div class="col-md-3 col-sm-3 pt-2"></div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <button type="button" class="btn btn-outline-primary">Clear</button>
+                                            &nbsp;
+                                            <button type="submit" class="btn btn-primary">Search</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 col-sm-1"></div>
                             </div>
                         </form>
                         <br>
