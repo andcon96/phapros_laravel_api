@@ -145,6 +145,35 @@
         </div>
     </div>
     <div id="loader" class="lds-dual-ring hidden overlay"></div>
+
+    <div class="modal fade" id="popUpRencanaProd">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Rencana Produksi</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" style="width: 100%; overflow: auto;">
+                        <table class="table table-bordered table-responsive-sm" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>No. WO</th>
+                                    <th>Due Date</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBodyRencanaProduksi"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -153,5 +182,31 @@
         $('#s_itemdesc').select2();
         $('#s_kelompokProduksi').select2();
         $('#s_makeTo').select2();
+
+        $('.nilaiRencanaProd').on('click', function() {
+            let itemcode = $(this).data('itemcode');
+            let bulan = $(this).data('bulan');
+            let tahun = $(this).data('tahun');
+            console.log(bulan);
+
+            $('#popUpRencanaProd').show();
+
+            $.ajax({
+                type: "GET",
+                url: "{{route('getDetailRencanaProduksi')}}",
+                data: {
+                    itemcode: itemcode,
+                    bulan: bulan,
+                    tahun: tahun,
+                },
+                success: function(data) {
+                    console.log(data);
+                    $('#tableBodyRencanaProduksi').empty().append(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
     </script>
 @endsection

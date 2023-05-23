@@ -15,7 +15,7 @@ class RencanaProduksiController extends Controller
         //     ->orderBy('rp_mrp_due_date', 'asc')
         //     ->get()
         //     ->groupBy(['rp_mrp_tahun', 'rp_mrp_bulan']);
-        $itemRencanaProduksi = ItemMRP::query()->with(['totalForecast']);
+        $itemRencanaProduksi = ItemMRP::query()->with(['totalForecast', 'totalRencanaProduksi']);
 
         if ($request->s_itemcode) {
             $itemcode = $request->s_itemcode;
@@ -47,9 +47,7 @@ class RencanaProduksiController extends Controller
                 return $q->rp_mrp_bulan . "'" . $q->rp_mrp_tahun;
             });
 
-        $periodeEstimasiStockAkhir = $periodeRencanaProduksi->values()->keyBy(function ($items, $key) {
-            return (int) $key;
-        });
+        $periodeEstimasiStockAkhir = $periodeRencanaProduksi;
 
         $totalPeriode = $periodeRencanaProduksi->count();
 
@@ -58,6 +56,37 @@ class RencanaProduksiController extends Controller
         $groupedMakeTo = ItemMRP::groupBy('item_make_to_type')->get('item_make_to_type');
 
         // dd($periodeEstimasiStockAkhir);
+        // dd($periodeRencanaProduksi);
+        // dd($itemRencanaProduksi);
         return view('rencanaProduksi.index', compact('itemRencanaProduksi', 'totalPeriode', 'periodeRencanaProduksi', 'periodeEstimasiStockAkhir', 'allItems', 'groupedProduksi', 'groupedMakeTo'));
+    }
+
+    public function getDetailRencanaProduksi(Request $request)
+    {
+        $itemcode = $request->itemcode;
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        $output = '';
+
+        $dataItem = ItemMRP::where('item_code', $itemcode)->first();
+        if ($dataItem) {
+            $dataDetail = ForecastRencanaProduksi::where('id_rp_item', $dataItem->id)
+                ->where('isForecast', 0)
+                ->where('rp_mrp_type', '!=', 'demand')
+                ->where('rp_mrp_tahun', $tahun)
+                ->where('rp_mrp_bulan', $bulan)
+                ->get();
+
+            foreach ($dataDetail as $detail) {
+                $output .= '<tr>';
+                $output .= '<td>' . $detail->rp_mrp_nbr . '</td>';
+                $output .= '<td>' . $detail->rp_mrp_due_date . '</td>';
+                $output .= '<td>' . $detail->rp_mrp_qty . '</td>';
+                $output .= '</tr>';
+            }
+        }
+
+        return $output;
     }
 }
