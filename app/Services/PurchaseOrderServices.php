@@ -389,7 +389,8 @@ class PurchaseOrderServices
                                 <receiptDetail>
                                     <location>' . $datas['rcptd_loc'] . '</location>
                                     <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
-                                    <lotref>' . $datas['rcptd_batch'] . '</lotref>
+                                    <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
+                                    <podQad04>' .$datas['rcptd_batch']. '</podQad04>
                                     <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
                                     <serialsYn>true</serialsYn>
                                 </receiptDetail>

@@ -225,9 +225,17 @@ class UserController extends Controller
         
         DB::beginTransaction();
         try{
-            $user = User2::where('id',$request->temp_id)->delete();
+            if($request->temp_stat == 'Deactivate'){
+                $status = 0;
+            }
+            elseif($request->temp_stat == 'Activate'){
+                $status = 1;
+            }
+            $user = User2::where('id',$request->temp_id)->update([
+                'is_active' => $status,
+            ]);
             DB::commit();
-            alert()->error('Success', 'User deleted!');
+            alert()->error('Success', 'User '.$request->temp_stat.'d');
             return redirect()->route('usermaint.index');
         }
         catch(Exception $err){

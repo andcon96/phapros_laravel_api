@@ -68,13 +68,18 @@ class LoginController extends Controller
             Auth::logout();
             return redirect()->back()->with(['error' => 'User tidak memiliki akses']);
         } else {
-            Session::put('name', $users->name);
-            Session::put('username', $users->username);
-            Session::put('aksesweb', $users->can_access_web);
+            if ($users->is_active == 0) {
+                Auth::logout();
+                return redirect()->back()->with(['error' => 'User tidak aktif']);
+            } else {
+                Session::put('name', $users->name);
+                Session::put('username', $users->username);
+                Session::put('aksesweb', $users->can_access_web);
 
-            if (session()->get('url.now') != null) {
-                // buat redirect ke prev url klo ada.
-                return redirect(session()->get('url.now'));
+                if (session()->get('url.now') != null) {
+                    // buat redirect ke prev url klo ada.
+                    return redirect(session()->get('url.now'));
+                }
             }
         }
     }

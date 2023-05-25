@@ -35,12 +35,14 @@ Route::middleware('auth:api')->group(function () {
     route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
 
     //receipt approval
+    route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
+    Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);
     route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
     
 });
-route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
-Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);
+
+
 Route::post('login', [APIController::class, 'login']);
 
 

@@ -6,6 +6,7 @@
     <td data-title="Receivemail">{{ $show->can_receive_email == 1 ? 'Yes' : 'No' }}</td>
     <td data-title="Approver">{{ $show->user_approver == 1 ? 'Yes' : 'No' }}</td>
     <td data-title="accessmenuit">{{ $show->can_access_it_menu == 1 ? 'Yes' : 'No' }}</td>
+    <td data-title="active">{{ $show->is_active == 1 ? 'Yes' : 'No' }}</td>
 
     <td data-title="Edit" class="action">
       <a href="" class="editUser" data-id="{{$show->id}}" data-uname="{{$show->username}}" data-accessweb="{{$show->can_access_web}}" data-approver="{{$show->user_approver}}" data-receivemail="{{$show->can_receive_email}}" data-accessmenuit="{{$show->can_access_it_menu}}" data-toggle='modal' data-target="#editModal"><i class="fas fa-edit"></i></a>
@@ -18,7 +19,7 @@
     </td> --}}
     <td data-title="Delete" class="action">
       
-      <a href="" class="deleteUser" data-id="{{$show->id}}" data-username="{{$show->username}}" data-name="{{$show->name}}" data-toggle='modal' data-target="#deleteModal"><i class="fas fa-trash"></i></a>
+      <a href="" class="deleteUser" data-id="{{$show->id}}" data-username="{{$show->username}}" data-name="{{$show->name}}" data-status="{{$show->is_active}}" data-toggle='modal' data-target="#deleteModal"><i class="fas fa-trash"></i></a>
        
     </td> 
   </tr>

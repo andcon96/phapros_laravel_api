@@ -67,9 +67,10 @@
                                             <th width="12%">Receive Email</th>
                                             <th width="7%">Approver</th>
                                             <th width="12%">Akses Menu IT</th>
+                                            <th width="12%">Active</th>
                                             <th width="7%">Edit</th>
             
-                                            <th width="7%">Delete</th>
+                                            <th width="7%">Ubah Status Aktif</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -316,10 +317,11 @@
 
                         <input type="hidden" name="temp_id" id="temp_id" value="">
                         <input type="hidden" name="temp_active" id="temp_active">
+                        <input type="hidden" name="temp_stat" id="temp_stat">
 
                         <div class="container">
                             <div class="row">
-                                Are you sure you want to Delete user :&nbsp; <b><a name="temp_uname"
+                                Are you sure you want to &nbsp;<b><a name="temp_status" id="temp_status"></a></b>&nbsp; user :&nbsp; <b><a name="temp_uname"
                                         id="temp_uname"></a></b> &nbsp;?
                             </div>
                         </div>
@@ -458,8 +460,18 @@
             var uid = $(this).data('id');
             var username = $(this).data('username');
             var name = $(this).data('name');
+            var status = $(this).data('status');
+            if(status == 1){
+                status = 'Deactivate';
+                
+            }
+            else if (status == 0){
+                status = 'Activate';
+            }
             document.getElementById("temp_id").value = uid;
+            document.getElementById("temp_stat").value = status;
             document.getElementById("temp_uname").innerHTML = username + ' -- ' + name;
+            document.getElementById("temp_status").innerHTML = status;
 
 
 

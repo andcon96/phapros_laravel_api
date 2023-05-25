@@ -30,7 +30,7 @@ class APIController extends Controller
         // else{
         //     return response()->json(['message' => 'Error', 'error'=>'Unauthorised'], 401);
         // }
-        $usercheck = User2::where('username',request('nik'))->first();
+        $usercheck = User2::where('username',request('nik'))->where('is_active',1)->first();
         
         if($usercheck){
             $user = User::where('nik', request('nik'))->first();
