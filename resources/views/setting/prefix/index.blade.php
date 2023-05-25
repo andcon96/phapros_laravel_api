@@ -19,7 +19,7 @@
                         <div class="card-body">
                             <div class="form-group row">
                                 <label for="prefixrcpt"
-                                    class="col-md-3 col-form-label text-md-right">{{ __('Prefix Ketidaksesuaian') }}</label>
+                                    class="col-md-3 col-form-label text-md-right">{{ __('Prefix Receipt') }}</label>
                                 <div class="col-md-2">
                                     <input id="prefixrcpt" type="text" class="form-control" name="prefixrcpt" autocomplete="off"
                                         value="{{ $prefix->prefix_rcpt_pr ?? '' }}" maxlength="3" autofocus required>
@@ -27,10 +27,36 @@
                             </div>
                             <div class="form-group row">
                                 <label for="rnrcpt"
-                                    class="col-md-3 col-form-label text-md-right">{{ __('Running Nbr Ketidaksesuaian') }}</label>
+                                    class="col-md-3 col-form-label text-md-right">{{ __('Running Nbr Receipt') }}</label>
                                 <div class="col-md-3">
                                     <input id="rnrcpt" type="text" class="form-control" autocomplete="off" name="rnrcpt"
                                         value="{{ $prefix->prefix_rcpt_rn ?? '' }}" maxlength="6" required>
+                                    <span id="errorcur" style="color:red"></span>
+                                </div>
+                            </div>
+    
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="offset-lg-1 col-lg-10">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label for="prefixtidaksesuai"
+                                    class="col-md-3 col-form-label text-md-right">{{ __('Prefix Ketidaksesuaian') }}</label>
+                                <div class="col-md-2">
+                                    <input id="prefixtidaksesuai" type="text" class="form-control" name="prefixtidaksesuai" autocomplete="off"
+                                        value="{{ $prefix->prefix_ketidaksesuaian ?? '' }}" maxlength="3" autofocus required>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="rntidaksesuai"
+                                    class="col-md-3 col-form-label text-md-right">{{ __('Running Nbr Ketidaksesuaian') }}</label>
+                                <div class="col-md-3">
+                                    <input id="rntidaksesuai" type="text" class="form-control" autocomplete="off" name="rntidaksesuai"
+                                        value="{{ $prefix->prefix_ketidaksesuaian_rn ?? '' }}" maxlength="6" required>
                                     <span id="errorcur" style="color:red"></span>
                                 </div>
                             </div>

@@ -24,19 +24,19 @@ class ReceiptMaster extends Model
     }
 
     public function getChecklist(){
-        return $this->hasMany(ReceiptChecklist::class,'rcptc_rcpt_id');
+        return $this->hasOne(ReceiptChecklist::class,'rcptc_rcpt_id');
     }
 
     public function getDocument(){
-        return $this->hasMany(ReceiptDocument::class,'rcptdoc_rcpt_id');
+        return $this->hasOne(ReceiptDocument::class,'rcptdoc_rcpt_id');
     }
 
     public function getKemasan(){
-        return $this->hasMany(ReceiptKemasan::class,'rcptk_rcpt_id');
+        return $this->hasOne(ReceiptKemasan::class,'rcptk_rcpt_id');
     }
 
     public function getTransport(){
-        return $this->hasMany(ReceiptTransport::class,'rcptt_rcpt_id');
+        return $this->hasOne(ReceiptTransport::class,'rcptt_rcpt_id');
     }
 
     public function getHistoryApproval(){
@@ -55,5 +55,8 @@ class ReceiptMaster extends Model
 
     public function getDetailReject(){
         return $this->hasMany(ReceiptDetail::class,'rcptd_rcpt_id')->where('rcptd_qty_rej','>',0);
+    }
+    public function getFileUpload(){
+        return $this->hasMany(ReceiptFileUpload::class,'rcptfu_rcpt_id');
     }
 }

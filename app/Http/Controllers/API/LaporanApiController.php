@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\ReceiptApiResources;
 use App\Http\Resources\WsaPoResources;
+use App\Models\Transaksi\LaporanImageModel;
 use App\Models\Master\Prefix;
 use App\Models\Transaksi\LaporanReceiptModel;
 use App\Models\Transaksi\PurchaseOrderMaster;
@@ -25,7 +26,13 @@ class LaporanApiController extends Controller
         $searchrcpt = '';
         
 
-        $data = ReceiptDetail::query()->with(['getMaster','getMaster.getpo','getMaster.getTransport','getMaster.getLaporan.getUserLaporan'])
+        $data = ReceiptDetail::query()->with(['getMaster.getpo','getMaster.getTransport','getMaster.getLaporan.getUserLaporan'])
+        ->whereHas('getMaster',function($r) use($request){
+            if($request->rcptnbr){
+                $r->where('rcpt_nbr','like','%'.$request->rscptnbr.'%');
+            }
+            $r->where('rcpt_status','=','created');
+        })
         ->selectRaw('
         min(rcptd_rcpt_id) as rcptd_rcpt_id,
         min(rcptd_lot) as rcptd_lot,
@@ -61,6 +68,7 @@ class LaporanApiController extends Controller
 
     public function submitlaporan(Request $request)
     {
+        $data = $request->all();
         $rcptnbr = $request->idrcpt;
         $ponbr = $request->ponbr;
         $part = $request->part;
@@ -80,7 +88,13 @@ class LaporanApiController extends Controller
         DB::beginTransaction();
         try{
             $prefix = Prefix::first();
-            $newprefix = $prefix->rcpt_pr.$prefix->rcpt_rn;
+            $prefixrn = (string)(intval($prefix->prefix_ketidaksesuaian_rn)+1);
+            $lenprefixrn = 6 - strlen($prefixrn);
+            $prefixfinal = str_pad($prefixrn,$lenprefixrn,'0');
+            $prefix->prefix_ketidaksesuaian_rn = $prefixfinal;
+            $prefix->save();
+            $newprefix = $prefix->prefix_ketidaksesuaian.$prefixfinal;
+            
             $laporanreceipt = new LaporanReceiptModel();
             $laporanreceipt->laporan_runningnumber = $newprefix;
             $laporanreceipt->laporan_rcptnbr = $rcptnbr;
@@ -99,6 +113,28 @@ class LaporanApiController extends Controller
             $laporanreceipt->laporan_nopol = $nopol;
             $laporanreceipt->laporan_anggota = $username;
             $laporanreceipt->save();
+            
+            if (array_key_exists('images', $data)) {
+                foreach ($data['images'] as $key => $dataImage) {
+                    if ($dataImage->isValid()) {
+                        $dataTime = date('Ymd_His');
+                        $filename = $dataTime . '-' . $dataImage->getClientOriginalName();
+
+                        // Simpan File Upload pada Public
+                        $savepath = public_path('/uploadfilelaporan/');
+                        $dataImage->move($savepath, $filename);
+
+                        $fullfile = $savepath.$filename;
+                        
+                        $newdata = new LaporanImageModel();
+                        $newdata->li_laporan_id = $laporanreceipt->id;
+                        $newdata->li_path = $fullfile;
+                        
+                        $newdata->save();
+                    }
+                }
+            }
+
             DB::commit();
             return 'success';
         }

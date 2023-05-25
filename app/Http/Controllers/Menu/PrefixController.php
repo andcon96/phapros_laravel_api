@@ -44,12 +44,14 @@ class PrefixController extends Controller
      */
     public function store(Request $request)
     {
+        
         $prefix = Prefix::firstOrNew(['id'=>'1']);
         $prefix->prefix_rcpt_pr = $request->prefixrcpt;
         $prefix->prefix_rcpt_rn = $request->rnrcpt;
-        
+        $prefix->prefix_ketidaksesuaian = $request->prefixtidaksesuai;
+        $prefix->prefix_ketidaksesuaian_rn = $request->rntidaksesuai;
         $prefix->save();
-
+        
         if($request->prefix){
             foreach($request->prefix as $key => $datas){
                 $prefiximr = new PrefixIMR();

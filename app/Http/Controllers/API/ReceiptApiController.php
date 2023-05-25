@@ -10,6 +10,7 @@ use App\Models\Transaksi\ApprovalHist;
 use App\Models\Transaksi\LaporanReceiptModel;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptDetail;
+use App\Models\Transaksi\ReceiptFileUpload;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Services\PurchaseOrderServices;
 use App\Services\WSAServices;
@@ -18,19 +19,25 @@ use Exception;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 
 class ReceiptApiController extends Controller
 {
     public function getreceipt(Request $request)
     {
-
-        $data = ReceiptDetail::query()->with(['getMaster.getpo','getMaster.getTransport',
-        'getMaster.getAppr','getMaster.getAppr.getUser'
-        
+        $data = ReceiptDetail::query()->with([
+            'getMaster.getpo',
+            'getMaster.getTransport',
+            'getMaster.getAppr',
+            'getMaster.getAppr.getUser',
+            'getMaster.getChecklist',
+            'getMaster.getDocument',
+            'getMaster.getKemasan',
         ])->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
-                $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
+                $r->where('rcpt_nbr','like','%'.$request->rscptnbr.'%');
             }
             $r->where('rcpt_status','=','created');
         })
@@ -43,13 +50,11 @@ class ReceiptApiController extends Controller
         sum(rcptd_qty_appr) as sum_qty_appr,
         sum(rcptd_qty_rej) as sum_qty_rej,
         min(rcptd_batch) as rcptd_batch
+
         ');
         
         $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get();
         return $data;
-        
-
-        
     }
 
 
@@ -145,5 +150,16 @@ class ReceiptApiController extends Controller
             Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datahist['apphist_receipt_id'].' '.$err);
             return 'reject failed';
         }
+    }
+
+    public function getreceiptdetail(Request $request)
+    {
+        $receiptnbr = $request->rcptnbr;
+        $data = ReceiptFileUpload::whereHas('getMaster',function($q) use($receiptnbr){
+            $q->where('rcpt_nbr',$receiptnbr);
+        })->selectRaw('rcptfu_path')->orderBy('rcptfu_is_ttd','asc')->get()->toArray();
+        
+        return $data;
+        
     }
 }

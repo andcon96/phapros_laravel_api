@@ -6,6 +6,7 @@ use App\Http\Controllers\API\PoApiController;
 use App\Http\Controllers\API\ReceiptApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +37,10 @@ Route::middleware('auth:api')->group(function () {
     //receipt approval
     route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
-    route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
+    
 });
-
+route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
+Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);
 Route::post('login', [APIController::class, 'login']);
 
 
