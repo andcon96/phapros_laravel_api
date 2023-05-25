@@ -34,7 +34,8 @@ class ExportPOApprovalHistory implements FromCollection, WithHeadings, WithMappi
         $po = PurchaseOrderMaster::query()
             ->join('approval_hist', 'po_mstr.po_nbr', '=', 'approval_hist.apphist_po_nbr')
             ->join('web_login_phapros.mst_anggota as db2', 'db2.id_anggota', '=', 'approval_hist.apphist_user_id')
-            ->leftjoin('rcpt_mstr', 'rcpt_mstr.id', '=', 'approval_hist.apphist_receipt_id');
+            ->leftjoin('rcpt_mstr', 'rcpt_mstr.id', '=', 'approval_hist.apphist_receipt_id')
+            ->select("*",'approval_hist.created_at as tanggal_approve');
         // ->with(['getDetail', 'getHistoryReceipt']);
 
         if ($domain) {
@@ -57,7 +58,8 @@ class ExportPOApprovalHistory implements FromCollection, WithHeadings, WithMappi
         }
 
         $po = $po->get();
-
+        
+        
         return $po;
     }
 
@@ -72,7 +74,8 @@ class ExportPOApprovalHistory implements FromCollection, WithHeadings, WithMappi
                 $po->rcpt_nbr,
                 $po->nik . ' - ' . $po->nama,
                 $po->apphist_status == null ? 'Waiting For Approval' : $po->apphist_status,
-                $po->apphist_approved_date
+                // $po->apphist_approved_date,
+                $po->tanggal_approve
             ];
         } else {
             if ($this->flagpo == $po->po_nbr) {
@@ -84,7 +87,8 @@ class ExportPOApprovalHistory implements FromCollection, WithHeadings, WithMappi
                     '',
                     $po->nik . ' - ' . $po->nama,
                     $po->apphist_status == null ? 'Waiting For Approval' : $po->apphist_status,
-                    $po->apphist_approved_date
+                    // $po->apphist_approved_date,
+                    $po->tanggal_approve
                 ];
             } else {
                 $this->flagpo = $po->po_nbr;
@@ -95,7 +99,8 @@ class ExportPOApprovalHistory implements FromCollection, WithHeadings, WithMappi
                     $po->rcpt_nbr,
                     $po->nik . ' - ' . $po->nama,
                     $po->apphist_status == null ? 'Waiting For Approval' : $po->apphist_status,
-                    $po->apphist_approved_date
+                    // $po->apphist_approved_date,
+                    $po->tanggal_approve
                 ];
             }
         }

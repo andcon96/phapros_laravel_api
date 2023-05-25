@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\SendEmailPOApproval;
 use App\Models\Master\Approval;
+use App\Models\Master\Item;
 use App\Models\Master\Prefix;
 use App\Models\Master\PrefixIMR;
 use App\Models\Master\Qxwsa;
@@ -100,6 +101,17 @@ class PurchaseOrderServices
             if($cekchecklist){
                 $totalrn = 1;
                 $newrn = 0;
+                $rnItem = 0;
+                // Prefix Item
+                $itemcode = $data['itemcode'];
+                $dataitem = Item::where('item_code',$itemcode)->first();
+                
+                if($dataitem){
+                    $rnItem = intval(substr($dataitem->item_rn,2,4)) + 1;
+                    $rnItem = str_pad($rnItem,2,0,STR_PAD_LEFT);
+                }
+
+                // Prefix IMR
                 $allprefix = PrefixIMR::get();
                 foreach($allprefix as $allprefixs){
                     // Cek Tahun Sama / ga
@@ -110,14 +122,16 @@ class PurchaseOrderServices
                         // Hitung Total Tahun Berjalan sesuai prefix inputan.
                         if($allprefixs->pin_prefix == substr($imrno,0,2)){    
                             $newrn = intval(substr($allprefixs->pin_rn,2,4)) + 1;
-                            $newrn = str_pad($newrn,2,0,STR_PAD_LEFT);  
+                            $newrn = str_pad($newrn,3,0,STR_PAD_LEFT);   // 2 Jadi 3
                         }
                     }
                 }
                 $totalrn = str_pad($totalrn,3,0,STR_PAD_LEFT);
 
-                $imrno = substr($imrno,0,2). '/' . $newrn . '/' . $totalrn;
+                // $imrno = substr($imrno,0,2). '/' . $newrn . '/' . $totalrn;
+                $imrno = substr($imrno,0,2). '/' . $rnItem . '/' . $newrn;
             }
+            
             $checklist = new ReceiptChecklist();
             $checklist->rcptc_rcpt_id = $idrcpmstr;
             $checklist->rcptc_imr_nbr = $imrno;
@@ -130,7 +144,7 @@ class PurchaseOrderServices
             $checklist->rcptc_country = $data['country'];
             $checklist->save();
 
-            // Save Prefix IMR
+            // Save Prefix IMR & Prefix Item
             $usedprefix = PrefixIMR::where('pin_prefix',substr($imrno,0,2))->first();
             if($usedprefix){
                 if(substr($usedprefix->pin_rn,0,2) == $yearnow){
@@ -140,6 +154,16 @@ class PurchaseOrderServices
                     $usedprefix->pin_rn = $yearnow.'0001';
                 }
                 $usedprefix->save();
+            }
+            $usedprefixItem = Item::where('item_code',$data['itemcode'])->first();
+            if($usedprefixItem){
+                if(substr($usedprefixItem->item_rn,0,2) == $yearnow){
+                    $newrn = $usedprefixItem->item_rn + 1;
+                    $usedprefixItem->item_rn = $newrn;
+                }else{
+                    $usedprefixItem->item_rn = $yearnow.'0001';
+                }
+                $usedprefixItem->save();
             }
 
             // Save Document

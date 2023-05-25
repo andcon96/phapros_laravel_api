@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Menu\ItemController;
 use App\Http\Controllers\Menu\PrefixController;
 use App\Http\Controllers\Menu\UserController;
 use App\Http\Controllers\QxwsaController;
@@ -53,6 +54,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('prefixmaint', PrefixController::class);
         //qxwsa maintenance
         Route::resource('qxwsa', QxwsaController::class);
+        //item maintenance
+        Route::resource('itemmaint', ItemController::class);
+        Route::post('loaditem', [ItemController::class, 'loaditem'])->name('LoadItem');
     });
 
     //Report Rencana Produksi

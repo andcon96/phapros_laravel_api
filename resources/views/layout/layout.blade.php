@@ -977,6 +977,7 @@
                         <ul aria-expanded="false">
                             <li><a href="{{ route('usermaint.index') }}">User Master</a></li>
                             <li><a href="{{ route('prefixmaint.index') }}">Prefix Master</a></li>
+                            <li><a href="{{ route('itemmaint.index') }}">Item Master</a></li>
                         </ul>
                     </li>
 

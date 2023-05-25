@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LocationResources;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\WsaPoResources;
+use App\Models\Master\Item;
 use App\Models\Master\PrefixIMR;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptMaster;
@@ -84,7 +85,9 @@ class PoApiController extends Controller
     {
         $data = PrefixIMR::get();
 
-        return response()->json(['data' => $data],200);
+        $prefixitem = Item::where('item_code',$request->item)->first();;
+
+        return response()->json(['data' => $data, 'prefixitem' => $prefixitem],200);
     }
 
     public function getreceipt(Request $request)
