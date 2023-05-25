@@ -55,6 +55,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Report Rencana Produksi
     Route::resource('rencanaProd', RencanaProduksiController::class);
-    
+    Route::get('getDetailRencanaProduksi', [RencanaProduksiController::class, 'getDetailRencanaProduksi'])->name('getDetailRencanaProduksi');
 });
 
