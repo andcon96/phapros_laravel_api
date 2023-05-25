@@ -46,12 +46,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
     Route::get('Changepass', [ChangePassword::class,'update'])->name('changepass');
 
-    //user maintenance
-    Route::resource('usermaint', UserController::class);
-    //prefix maintenance
-    Route::resource('prefixmaint', PrefixController::class);
-    //qxwsa maintenance
-    Route::resource('qxwsa', QxwsaController::class);
+    Route::group(['middleware' => 'can:access_menu_it'], function(){
+        //user maintenance
+        Route::resource('usermaint', UserController::class);
+        //prefix maintenance
+        Route::resource('prefixmaint', PrefixController::class);
+        //qxwsa maintenance
+        Route::resource('qxwsa', QxwsaController::class);
+    });
 
     //Report Rencana Produksi
     Route::resource('rencanaProd', RencanaProduksiController::class);

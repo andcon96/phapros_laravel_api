@@ -957,6 +957,7 @@
                             <li><a href="{{ route('rencanaProd.index') }}">Rencana Produksi</a></li>
                         </ul>
                     </li>
+                    @can('access_menu_it')
                     <li class="nav-label">Master</li>
                     <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -998,6 +999,7 @@
                             <li><a href="{{ url('qxwsa') }}">WSA Qxtend Master</a></li>
                         </ul>
                     </li>
+                    @endcan
                 </ul>
             </div>
 

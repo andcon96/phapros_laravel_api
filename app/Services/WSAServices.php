@@ -251,7 +251,6 @@ class WSAServices
         $dataloop    = $xmlResp->xpath('//ns1:tempRow');
 
         $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
-
         if ($qdocResult == 'true') {
             foreach ($dataloop as $key => $datas) {
                 $arrayloop[] = [
@@ -265,6 +264,8 @@ class WSAServices
             $arrayloop = collect($arrayloop);
 
             return $arrayloop;
+        }else{
+            return false;
         }
     }
 

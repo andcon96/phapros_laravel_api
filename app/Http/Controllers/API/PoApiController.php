@@ -53,7 +53,7 @@ class PoApiController extends Controller
         if($saveddata[0] == true){
 
             // 0 => Status True/False , 1 => Rcpt ID
-            $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
+            // $sendemail = (new PurchaseOrderServices())->sendmailapproval($saveddata[1]);
 
             $datareceipt = ReceiptMaster::with(['getDetailReject','getpo','getTransport','getLaporan.getUserLaporan'])->find($saveddata[1]);
             $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
