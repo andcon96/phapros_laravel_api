@@ -329,7 +329,6 @@ class WSAServices
             }
             curl_close($curl);
         }
-        dd('1',$qdocResponse);
 
         if (is_bool($qdocResponse)) {
             return false;
@@ -341,23 +340,22 @@ class WSAServices
 
         $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
         if ($qdocResult == 'true') {
-            // foreach ($dataloop as $key => $datas) {
-            //     // $arrayloop[] = [
-            //     //     "t_domain" => (string)$datas->t_domain,
-            //     //     "t_item_code" => (string)$datas->t_item_code,
-            //     //     "t_item_desc" => (string)$datas->t_item_desc,
-            //     // ];
-            //     $item = Item::where('item_code',(string)$datas->t_item_code)->first();
-            //     if(!$item){
-            //         $newitem = new Item();
-            //         $newitem->item_code = (string)$datas->t_item_code;
-            //         $newitem->item_desc = (string)$datas->t_item_desc;
-            //         $newitem->save();
-            //     }
-            // }
+            foreach ($dataloop as $key => $datas) {
+                // $arrayloop[] = [
+                //     "t_domain" => (string)$datas->t_domain,
+                //     "t_item_code" => (string)$datas->t_item_code,
+                //     "t_item_desc" => (string)$datas->t_item_desc,
+                // ];
+                $item = Item::where('item_code',(string)$datas->t_item_code)->first();
+                if(!$item){
+                    $newitem = new Item();
+                    $newitem->item_code = (string)$datas->t_item_code;
+                    $newitem->item_desc = (string)$datas->t_item_desc;
+                    $newitem->save();
+                }
+            }
             
-            $dataloop = collect($dataloop);
-            dd($dataloop);
+            // $dataloop = collect($dataloop);
             // $arrayloop = collect($arrayloop);
 
             return $arrayloop;
