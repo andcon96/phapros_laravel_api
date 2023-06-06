@@ -73,7 +73,9 @@ class RencanaProduksiController extends Controller
             ->get()
             ->groupBy(function ($q) {
                 return substr($q->rp_mrp_bulan, 0, 3) . "'" . $q->rp_mrp_tahun;
-            })->last()->first();
+            });
+        
+        $lastPeriodeForecast = $lastPeriodeForecast->count() > 0 ? $lastPeriodeForecast->last()->first() : 0;
 
         // dd($lastPeriodeForecast);
 
@@ -245,8 +247,9 @@ class RencanaProduksiController extends Controller
                 }
             }
         }
-        $firstYearAndMonth = $dataPerMonthAndYear[array_key_first($dataPerMonthAndYear)];
-        $lastYearAndMonth = $dataPerMonthAndYear[array_key_last($dataPerMonthAndYear)];
+
+        $firstYearAndMonth = empty($dataPerMonthAndYear) ? [] : $dataPerMonthAndYear[array_key_first($dataPerMonthAndYear)];
+        $lastYearAndMonth = empty($dataPerMonthAndYear) ? [] : $dataPerMonthAndYear[array_key_last($dataPerMonthAndYear)];
         $totalPeriode = count($dataPerMonthAndYear);
         // dd($dataItem);
         // dd($totalPeriode);

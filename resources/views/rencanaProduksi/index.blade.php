@@ -8,7 +8,9 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <h4>Rencana Produksi</h4>
-                            <h5>{{$firstYearAndMonth}} - {{$lastYearAndMonth}}</h5>
+                            @if (!empty($firstYearAndMonth) && !empty($lastYearAndMonth))
+                                <h5>{{$firstYearAndMonth}} - {{$lastYearAndMonth}}</h5>
+                            @endif
                         </div>
                         <br>
                         <form action="{{ route('rencanaProd.index') }}" method="GET">
@@ -142,7 +144,9 @@
                             </table>
                         </div>
                         <br>
-                        {!! $itemRencanaProduksi->links() !!}
+                        @if ($itemRencanaProduksi->count() > 0)
+                            {!! $itemRencanaProduksi->links() !!}
+                        @endif
                     </div>
                 </div>
             </div>
