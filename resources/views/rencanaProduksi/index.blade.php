@@ -7,8 +7,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <h4>Rencana Produksi {{ now()->year }}</h4>
-                            <h5>{{ now()->format('F') }} {{ now()->year }} - Dec {{ now()->year }}</h5>
+                            <h4>Rencana Produksi</h4>
+                            <h5>{{$firstYearAndMonth}} - {{$lastYearAndMonth}}</h5>
                         </div>
                         <br>
                         <form action="{{ route('rencanaProd.index') }}" method="GET">
@@ -90,7 +90,7 @@
                                     <div class="form-group row">
                                         <div class="col-md-3 col-sm-3 pt-2"></div>
                                         <div class="col-md-6 col-sm-6">
-                                            <button type="button" class="btn btn-outline-primary">Clear</button>
+                                            <a href="{{route('rencanaProd.index')}}" id="refreshButton" class="btn btn-outline-primary">Reset</a>
                                             &nbsp;
                                             <button type="submit" class="btn btn-primary">Search</button>
                                         </div>
@@ -100,6 +100,7 @@
                             </div>
                         </form>
                         <br>
+                        <input type="hidden" class="hiddenTotalColumn" value="{{ $totalPeriode }}">
                         <div class="table-responsive" style="width: 100%; overflow: auto;">
                             <table class="table table-bordered table-responsive-sm" style="width:100%;">
                                 <thead>
@@ -121,15 +122,18 @@
                                         </th>
                                     </tr>
                                     <tr>
-                                        @foreach ($periodeRencanaProduksi as $key => $period)
-                                            <th>{{ $key }}</th>
+                                        @foreach ($dataPerMonthAndYear as $bulanTahun)
+                                            <th style="white-space: nowrap">{{$bulanTahun}}</th>
                                         @endforeach
-                                        @foreach ($periodeRencanaProduksi as $key => $period)
-                                            <th>{{ $key }}</th>
+
+                                        @foreach ($dataPerMonthAndYear as $bulanTahun)
+                                            <th style="white-space: nowrap">{{$bulanTahun}}</th>
                                         @endforeach
-                                        @foreach ($periodeRencanaProduksi as $key => $period)
-                                            <th>{{ $key }}</th>
+
+                                        @foreach ($dataPerMonthAndYear as $bulanTahun)
+                                            <th style="white-space: nowrap">{{$bulanTahun}}</th>
                                         @endforeach
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,22 +182,53 @@
 
 @section('scripts')
     <script>
+        function calculateEstimasiStockAkhir() {
+            let totalColumnEstimasi = $('.hiddenTotalColumn').val();
+            let totalRow = document.getElementsByClassName('itemcode').length;
+            // console.log(totalColumnEstimasi);
+            if (totalRow > 0) {
+                for (r = 0; r < totalRow; r++) {
+                    let estimasiAkhir = 0;
+                    let stockAkhir = parseFloat(document.getElementsByClassName('stockAkhir')[r].innerHTML.replaceAll('.', ''));
+                    let itemcode = document.getElementsByClassName('itemcode')[r].innerHTML;
+                    // console.log(itemcode);
+                    // console.log(stockAkhir);
+                    for (i = 0; i < totalColumnEstimasi; i++) {
+                        let nilaiForecast = parseFloat(document.getElementsByClassName('kolomForecast'+itemcode)[i].innerHTML.replaceAll('.', ''));
+                        let nilaiRencanaProduksi = parseFloat(document.getElementsByClassName('kolomRencanaProd'+itemcode)[i].innerHTML.replaceAll('.', ''));
+                        if (i == 0) {
+                            estimasiAkhir = estimasiAkhir + stockAkhir + nilaiRencanaProduksi - nilaiForecast;
+                        } else {
+                            estimasiAkhir = estimasiAkhir + nilaiRencanaProduksi - nilaiForecast;
+                        }
+                        // estimasiAkhir = Number(estimasiAkhir).toLocaleString('en-US');
+                        // console.log(estimasiAkhir);
+                        document.getElementsByClassName('kolomEstimasiStockAkhir'+itemcode)[i].innerHTML = Number(estimasiAkhir).toLocaleString('en-US').replaceAll(',', '.');
+                    }
+                }
+            }
+        }
+
         $('#s_itemcode').select2();
         $('#s_itemdesc').select2();
         $('#s_kelompokProduksi').select2();
         $('#s_makeTo').select2();
 
+        calculateEstimasiStockAkhir();
+
         $('.nilaiRencanaProd').on('click', function() {
             let itemcode = $(this).data('itemcode');
             let bulan = $(this).data('bulan');
             let tahun = $(this).data('tahun');
-            console.log(bulan);
+            // console.log(itemcode);
+            // console.log(bulan);
+            // console.log(tahun);
 
             $('#popUpRencanaProd').show();
 
             $.ajax({
                 type: "GET",
-                url: "{{route('getDetailRencanaProduksi')}}",
+                url: "{{ route('getDetailRencanaProduksi') }}",
                 data: {
                     itemcode: itemcode,
                     bulan: bulan,

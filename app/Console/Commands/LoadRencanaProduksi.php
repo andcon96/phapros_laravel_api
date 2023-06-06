@@ -152,87 +152,6 @@ class LoadRencanaProduksi extends Command
                     $rencanaProduksi->save();
                 }
 
-                // Wsa ambil rencana produksi
-                $qdocRequest = '<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-                                    <Body>
-                                        <php_rencanaProduksi xmlns="' . $wsa->wsas_path . '">
-                                            <inpdomain>' . $domain . '</inpdomain>
-                                        </php_rencanaProduksi>
-                                    </Body>
-                                </Envelope>';
-
-
-                $curlOptions = array(
-                    CURLOPT_URL => $wsa_url,
-                    CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
-                    CURLOPT_TIMEOUT => $timeout + 120, // The maximum number of seconds to allow cURL functions to execute. must be greater than CURLOPT_CONNECTTIMEOUT
-                    CURLOPT_HTTPHEADER => $this->httpHeader($qdocRequest),
-                    CURLOPT_POSTFIELDS => preg_replace("/\s+/", " ", $qdocRequest),
-                    CURLOPT_POST => true,
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYHOST => false
-                );
-
-                $getInfo = '';
-                $httpCode = 0;
-                $curlErrno = 0;
-                $curlError = '';
-                $qdocResponse = '';
-
-                $curl = curl_init();
-                if ($curl) {
-                    curl_setopt_array($curl, $curlOptions);
-                    $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
-                    $curlErrno    = curl_errno($curl);
-                    $curlError    = curl_error($curl);
-                    $first        = true;
-
-                    foreach (curl_getinfo($curl) as $key => $value) {
-                        if (gettype($value) != 'array') {
-                            if (!$first) $getInfo .= ", ";
-                            $getInfo = $getInfo . $key . '=>' . $value;
-                            $first = false;
-                            if ($key == 'http_code') $httpCode = $value;
-                        }
-                    }
-                    curl_close($curl);
-                }
-
-                $xmlResp = simplexml_load_string($qdocResponse);
-
-                $xmlResp->registerXPathNamespace('ns1', $wsa->wsas_path);
-
-                $dataloop   = $xmlResp->xpath('//ns1:tempRow');
-                $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
-
-                if ($qdocResult == 'true') {
-                    foreach ($dataloop as $dataWSA) {
-                        $item = ItemMRP::where('item_code', $dataWSA->t_mrp_part)->first();
-                        if (!$item) {
-                            DB::rollBack();
-                            $errMessage = 'Item MRP: ' . $dataWSA->t_mrp_part . ' tidak terdapat pada table item (Rencana Produksi)';
-                            Log::channel('loadRencanaProduksi')->info($errMessage);
-                        } else {
-                            $dataRencanaProduksi = new ForecastRencanaProduksi();
-                            $dataRencanaProduksi->id_rp_item = $item->id;
-                            $dataRencanaProduksi->isForecast = 0;
-                            $dataRencanaProduksi->rp_mrp_nbr = $dataWSA->t_mrp_nbr;
-                            $dataRencanaProduksi->rp_mrp_bulan = $dataWSA->t_mrp_bulan;
-                            $dataRencanaProduksi->rp_mrp_tahun = $dataWSA->t_mrp_tahun;
-                            $dataRencanaProduksi->rp_mrp_dataset = $dataWSA->t_mrp_dataset;
-                            $dataRencanaProduksi->rp_mrp_type = $dataWSA->t_mrp_type;
-                            $dataRencanaProduksi->rp_mrp_due_date = (String)$dataWSA->t_mrp_due_date;
-                            $dataRencanaProduksi->rp_mrp_qty = $dataWSA->t_mrp_qty;
-                            $dataRencanaProduksi->save();
-                        }
-                    }
-                } else {
-                    DB::rollBack();
-                    $errMessage = 'WSA get Rencana Produksi returns false';
-                    Log::channel('loadRencanaProduksi')->info($errMessage);
-                }
-
                 // WSA untuk ambil forecast
                 $qdocRequest = '<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
                                     <Body>
@@ -292,7 +211,7 @@ class LoadRencanaProduksi extends Command
                         $item = ItemMRP::where('item_code', $dataWSA->t_mrp_part)->first();
                         if (!$item) {
                             DB::rollBack();
-                            $errMessage = 'Item MRP: ' . $dataWSA->t_mrp_part . ' tidak terdapat pada table item (Forecast)';
+                            $errMessage = 'Item MRP: ' . $dataWSA->t_mrp_part . ' tidak terdapat pada table item (Forecast)' . PHP_EOL;
                             Log::channel('loadRencanaProduksi')->info($errMessage);
                         } else {
                             $dataRencanaProduksi = new ForecastRencanaProduksi();
@@ -310,14 +229,118 @@ class LoadRencanaProduksi extends Command
                     }
                 } else {
                     DB::rollBack();
-                    $errMessage = 'WSA get forecast returns false';
+                    $errMessage = 'WSA get forecast returns false' . PHP_EOL;
+                    Log::channel('loadRencanaProduksi')->info($errMessage);
+                }
+
+                // Wsa ambil rencana produksi
+                $qdocRequest = '<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                                    <Body>
+                                        <php_rencanaProduksi xmlns="' . $wsa->wsas_path . '">
+                                            <inpdomain>' . $domain . '</inpdomain>
+                                        </php_rencanaProduksi>
+                                    </Body>
+                                </Envelope>';
+
+
+                $curlOptions = array(
+                    CURLOPT_URL => $wsa_url,
+                    CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
+                    CURLOPT_TIMEOUT => $timeout + 120, // The maximum number of seconds to allow cURL functions to execute. must be greater than CURLOPT_CONNECTTIMEOUT
+                    CURLOPT_HTTPHEADER => $this->httpHeader($qdocRequest),
+                    CURLOPT_POSTFIELDS => preg_replace("/\s+/", " ", $qdocRequest),
+                    CURLOPT_POST => true,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_SSL_VERIFYHOST => false
+                );
+
+                $getInfo = '';
+                $httpCode = 0;
+                $curlErrno = 0;
+                $curlError = '';
+                $qdocResponse = '';
+
+                $curl = curl_init();
+                if ($curl) {
+                    curl_setopt_array($curl, $curlOptions);
+                    $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
+                    $curlErrno    = curl_errno($curl);
+                    $curlError    = curl_error($curl);
+                    $first        = true;
+
+                    foreach (curl_getinfo($curl) as $key => $value) {
+                        if (gettype($value) != 'array') {
+                            if (!$first) $getInfo .= ", ";
+                            $getInfo = $getInfo . $key . '=>' . $value;
+                            $first = false;
+                            if ($key == 'http_code') $httpCode = $value;
+                        }
+                    }
+                    curl_close($curl);
+                }
+
+                $xmlResp = simplexml_load_string($qdocResponse);
+
+                $xmlResp->registerXPathNamespace('ns1', $wsa->wsas_path);
+
+                $dataloop   = $xmlResp->xpath('//ns1:tempRow');
+                $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
+
+                // if ($qdocResult == 'true') {
+                //     foreach ($dataloop as $dataWSA) {
+                //         $item = ItemMRP::where('item_code', $dataWSA->t_mrp_part)->first();
+                //         if (!$item) {
+                //             DB::rollBack();
+                //             $errMessage = 'Item MRP: ' . $dataWSA->t_mrp_part . ' tidak terdapat pada table item (Rencana Produksi)' . PHP_EOL;
+                //             Log::channel('loadRencanaProduksi')->info($errMessage);
+                //         } else {
+                //             $dataRencanaProduksi = new ForecastRencanaProduksi();
+                //             $dataRencanaProduksi->id_rp_item = $item->id;
+                //             $dataRencanaProduksi->isForecast = 0;
+                //             $dataRencanaProduksi->rp_mrp_nbr = $dataWSA->t_mrp_nbr;
+                //             $dataRencanaProduksi->rp_mrp_bulan = $dataWSA->t_mrp_bulan;
+                //             $dataRencanaProduksi->rp_mrp_tahun = $dataWSA->t_mrp_tahun;
+                //             $dataRencanaProduksi->rp_mrp_dataset = $dataWSA->t_mrp_dataset;
+                //             $dataRencanaProduksi->rp_mrp_type = $dataWSA->t_mrp_type;
+                //             $dataRencanaProduksi->rp_mrp_due_date = (String)$dataWSA->t_mrp_due_date;
+                //             $dataRencanaProduksi->rp_mrp_qty = $dataWSA->t_mrp_qty;
+                //             $dataRencanaProduksi->save();
+                //         }
+                //     }
+                // } else {
+                //     DB::rollBack();
+                //     $errMessage = 'WSA get Rencana Produksi returns false' . PHP_EOL;
+                //     Log::channel('loadRencanaProduksi')->info($errMessage);
+                // }
+
+                if ($qdocResult == 'true') {
+                    foreach ($dataloop as $dataWSA) {
+                        $item = ItemMRP::where('item_code', $dataWSA->t_mrp_part)->first();
+                        if ($item) {
+                            $dataRencanaProduksi = new ForecastRencanaProduksi();
+                            $dataRencanaProduksi->id_rp_item = $item->id;
+                            $dataRencanaProduksi->isForecast = 0;
+                            $dataRencanaProduksi->rp_mrp_nbr = $dataWSA->t_mrp_nbr;
+                            $dataRencanaProduksi->rp_mrp_bulan = $dataWSA->t_mrp_bulan;
+                            $dataRencanaProduksi->rp_mrp_tahun = $dataWSA->t_mrp_tahun;
+                            $dataRencanaProduksi->rp_mrp_dataset = $dataWSA->t_mrp_dataset;
+                            $dataRencanaProduksi->rp_mrp_type = $dataWSA->t_mrp_type;
+                            $dataRencanaProduksi->rp_mrp_due_date = (string)$dataWSA->t_mrp_due_date;
+                            $dataRencanaProduksi->rp_mrp_qty = $dataWSA->t_mrp_qty;
+                            $dataRencanaProduksi->save();
+                        }
+                    }
+                } else {
+                    // DB::rollBack();
+                    $errMessage = 'Tidak ada rencana produksi' . PHP_EOL;
                     Log::channel('loadRencanaProduksi')->info($errMessage);
                 }
 
                 DB::commit();
             } else {
                 DB::rollBack();
-                $errMessage = 'WSA get item returns false';
+                $errMessage = 'WSA get item returns false' . PHP_EOL;
                 Log::channel('loadRencanaProduksi')->info($errMessage);
             }
         } catch (\Exception $err) {
