@@ -56,7 +56,7 @@ class PrefixController extends Controller
             foreach($request->prefix as $key => $datas){
                 $prefiximr = new PrefixIMR();
                 $prefiximr->pin_prefix = $datas;
-                $prefiximr->pin_rn = 0;
+                $prefiximr->pin_rn = '000000';
                 $prefiximr->save();
             }
         }
