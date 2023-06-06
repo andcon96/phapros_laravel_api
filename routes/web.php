@@ -8,6 +8,7 @@ use App\Http\Controllers\Menu\UserController;
 use App\Http\Controllers\QxwsaController;
 use App\Http\Controllers\Transaksi\PurchaseOrderController;
 use App\Http\Controllers\RencanaProduksiController;
+use App\Http\Controllers\Transaksi\MRPReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('itemmaint', ItemController::class);
         Route::post('loaditem', [ItemController::class, 'loaditem'])->name('LoadItem');
     });
+
+    // Menu Report MRP
+    Route::resource('menumrp', MRPReportController::class);
 
     //Report Rencana Produksi
     Route::resource('rencanaProd', RencanaProduksiController::class);

@@ -7,6 +7,7 @@ use App\Models\Master\Location;
 use App\Models\Master\Qxwsa;
 use App\Models\Transaksi\PurchaseOrderDetail;
 use App\Models\Transaksi\PurchaseOrderMaster;
+use Illuminate\Database\Eloquent\Collection;
 
 class WSAServices
 {
@@ -445,6 +446,104 @@ class WSAServices
             }
             return true;
         } else {
+            return false;
+        }
+    }
+
+    public function wsamrp()
+    {
+        $wsa = Qxwsa::first();
+
+        $qxUrl = $wsa->wsas_url;
+        $qxReceiver = '';
+        $qxSuppRes = 'false';
+        $qxScopeTrx = '';
+        $qdocName = '';
+        $qdocVersion = '';
+        $dsName = '';
+        $timeout = 10;
+        $domain = $wsa->wsas_domain;
+        $arrayloop = [];
+        $qdocRequest =
+            '<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+            <Body>
+                <php_mrp_report xmlns="' . $wsa->wsas_path . '">
+                    <inpdomain>' . $domain . '</inpdomain>
+                </php_mrp_report>
+            </Body>
+        </Envelope>';
+
+        $curlOptions = array(
+            CURLOPT_URL => $qxUrl,
+            CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
+            CURLOPT_TIMEOUT => $timeout + 5, // The maximum number of seconds to allow cURL functions to execute. must be greater than CURLOPT_CONNECTTIMEOUT
+            CURLOPT_HTTPHEADER => $this->httpHeader($qdocRequest),
+            CURLOPT_POSTFIELDS => preg_replace("/\s+/", " ", $qdocRequest),
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        );
+
+        $getInfo = '';
+        $httpCode = 0;
+        $curlErrno = 0;
+        $curlError = '';
+        $qdocResponse = '';
+
+        $curl = curl_init();
+        if ($curl) {
+            curl_setopt_array($curl, $curlOptions);
+            $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
+            $curlErrno    = curl_errno($curl);
+            $curlError    = curl_error($curl);
+            $first        = true;
+
+            foreach (curl_getinfo($curl) as $key => $value) {
+                if (gettype($value) != 'array') {
+                    if (!$first) $getInfo .= ", ";
+                    $getInfo = $getInfo . $key . '=>' . $value;
+                    $first = false;
+                    if ($key == 'http_code') $httpCode = $value;
+                }
+            }
+            curl_close($curl);
+        }
+
+        if (is_bool($qdocResponse)) {
+            return false;
+        }
+        $xmlResp = simplexml_load_string($qdocResponse);
+
+        $xmlResp->registerXPathNamespace('ns1', $wsa->wsas_path);
+        $dataloop    = $xmlResp->xpath('//ns1:tempRow');
+
+        $qdocResult = (string) $xmlResp->xpath('//ns1:outOK')[0];
+        if ($qdocResult == 'true') {
+            foreach ($dataloop as $key => $datas) {
+                $arrayloop[] = [
+                    't_pt_prod_line' => (String)$datas->t_pt_prod_line,
+                    't_mrp_type' => (String)$datas->t_mrp_type,
+                    't_mrp_dataset' => (String)$datas->t_mrp_dataset,
+                    't_mrp_part' => (String)$datas->t_mrp_part,
+                    't_partdesc' => (String)$datas->t_partdesc,
+                    't_mrp_nbr' => (String)$datas->t_mrp_nbr,
+                    't_mrp_qty' => (String)$datas->t_mrp_qty,
+                    't_ld_qty_oh' => (String)$datas->t_ld_qty_oh,
+                    't_pt_pm_code' => (String)$datas->t_pt_pm_code,
+                    't_mrp_rel_date' => (String)$datas->t_mrp_rel_date,
+                    't_mrp_due_date' => (String)$datas->t_mrp_due_date,
+                    't_pt_ord_per' => (String)$datas->t_pt_ord_per,
+                    't_pt_ord_mult' => (String)$datas->t_pt_ord_mult,
+                    't_pt_ord_min' => (String)$datas->t_pt_ord_min,
+                    't_oa_det' => (String)$datas->t_oa_det,
+                ];
+            }
+
+            $arrayloop = Collection::make($arrayloop);
+
+            return $arrayloop;
+        }else{
             return false;
         }
     }
