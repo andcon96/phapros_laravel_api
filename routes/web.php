@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Menu Report MRP
     Route::resource('menumrp', MRPReportController::class);
+    Route::get('exportmrp', [MRPReportController::class, 'exportmrp'])->name('exportMRP');
 
     //Report Rencana Produksi
     Route::resource('rencanaProd', RencanaProduksiController::class);
