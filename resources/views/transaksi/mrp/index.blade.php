@@ -41,7 +41,11 @@
                                             <a href="{{route('menumrp.index')}}" id="refreshButton" class="btn btn-outline-primary">Reset</a>
                                             &nbsp;
                                             <button type="submit" class="btn btn-primary">Search</button>
+                                            <button type="button" class="btn btn-outline-secondary" id="btnexport" data-toggle="modal" data-target="#exampleModalCenter"><span
+                                                class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                                            </span>Download</button>
                                         </div>
+                                        
                                     </div>
                                 </div>
                                 <div class="col-md-1 col-sm-1"></div>
@@ -105,5 +109,22 @@
             $('#productline').val(productline);
             $('#s_itemcode').val(s_itemcode).trigger('change');
         });
+
+        $(document).on('click', '#btnexport', function(e){
+            e.preventDefault();
+            let tipeexport = $(this).data('tipeexport');
+            let productline = $('#productline').val();
+            let s_itemcode = $('#s_itemcode').val();
+
+            let datarequest  = "?productline=:productline&s_itemcode=:s_itemcode"; 
+            
+            datarequest = datarequest.replace(':productline', productline);
+            datarequest = datarequest.replace(':s_itemcode', s_itemcode);
+            
+            
+            let url = "{{ route('exportMRP') }}" + datarequest;
+
+            window.open(url, '_blank');
+        })
     </script>
 @endsection
