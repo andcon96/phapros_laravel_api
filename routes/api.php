@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
     //receipt approval
     route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
     Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);
+    Route::get('getreceiptfoto',[ReceiptApiController::class,'getreceiptfoto']);
     route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
     

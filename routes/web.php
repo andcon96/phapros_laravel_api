@@ -8,6 +8,7 @@ use App\Http\Controllers\Menu\UserController;
 use App\Http\Controllers\QxwsaController;
 use App\Http\Controllers\Transaksi\PurchaseOrderController;
 use App\Http\Controllers\RencanaProduksiController;
+use App\Http\Controllers\Transaksi\KetersediaanRawMaterialController;
 use App\Http\Controllers\Transaksi\MRPReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -66,5 +67,10 @@ Route::group(['middleware' => ['auth']], function () {
     //Report Rencana Produksi
     Route::resource('rencanaProd', RencanaProduksiController::class);
     Route::get('getDetailRencanaProduksi', [RencanaProduksiController::class, 'getDetailRencanaProduksi'])->name('getDetailRencanaProduksi');
+    
+    //Ketersediaan Raw Material
+    Route::resource('KetersediaanRawMaterial', KetersediaanRawMaterialController::class);
+    Route::get('exportketersediaanrawmaterial',[KetersediaanRawMaterialController::class, 'exportToExcel'])->name('exportToExcel');
+    
 });
 
