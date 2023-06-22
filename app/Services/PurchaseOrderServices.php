@@ -70,9 +70,11 @@ class PurchaseOrderServices
 
             // Save Receipt Detail
             foreach ($newdata as $key => $datas) {
-                $arraysiteloc = explode(' || ', $datas->t_lvc_loc);
-                $site = $arraysiteloc[0] ?? '';
-                $loc = $arraysiteloc[1] ?? '';
+                // $arraysiteloc = explode(' || ', $datas->t_lvc_loc);
+                // $site = $arraysiteloc[0] ?? '';
+                // $loc = $arraysiteloc[1] ?? '';
+
+                $loc = $datas->t_lvc_loc;
 
                 $detailreceipt = new ReceiptDetail();
                 $detailreceipt->rcptd_rcpt_id = $idrcpmstr;
@@ -86,7 +88,7 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
                 // $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
                 $detailreceipt->rcptd_loc = $loc;
-                $detailreceipt->rcptd_site = $site;
+                // $detailreceipt->rcptd_site = $site;
                 $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
                 $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
                 $detailreceipt->save();
@@ -461,6 +463,179 @@ class PurchaseOrderServices
         } else {
             Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocResponse);
             return 'failed';
+        }
+    }
+
+    public function loadpodaily($data)
+    {
+        $qxwsa = Qxwsa::firstOrFail();
+        if (is_null($qxwsa->qx_url)) {
+            return 'nourl';
+        }
+
+        $ponbr = $data['po_nbr'];
+        $povend = $data['po_vend'];
+
+        $poddetail = $data['poDetails'];
+
+        // Var Qxtend
+        $qxUrl          = $qxwsa->qx_url;
+
+        $timeout        = 0;
+
+        // XML Qextend
+        $qdocHead = '<?xml version="1.0" encoding="UTF-8"?>
+                        <soapenv:Envelope xmlns="urn:schemas-qad-com:xml-services"
+                        xmlns:qcom="urn:schemas-qad-com:xml-services:common"
+                        xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+                        <soapenv:Header>
+                            <wsa:Action/>
+                            <wsa:To>urn:services-qad-com:QADHSS</wsa:To>
+                            <wsa:MessageID>urn:services-qad-com::QADHSS</wsa:MessageID>
+                            <wsa:ReferenceParameters>
+                            <qcom:suppressResponseDetail>false</qcom:suppressResponseDetail>
+                            </wsa:ReferenceParameters>
+                            <wsa:ReplyTo>
+                            <wsa:Address>urn:services-qad-com:</wsa:Address>
+                            </wsa:ReplyTo>
+                        </soapenv:Header>
+                        <soapenv:Body>
+                            <maintainSalesOrder>
+                            <qcom:dsSessionContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>domain</qcom:propertyName>
+                                <qcom:propertyValue>'.Session::get('domain').'</qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>scopeTransaction</qcom:propertyName>
+                                <qcom:propertyValue>true</qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>version</qcom:propertyName>
+                                <qcom:propertyValue>ERP3_2</qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>mnemonicsRaw</qcom:propertyName>
+                                <qcom:propertyValue>false</qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>username</qcom:propertyName>
+                                <qcom:propertyValue>mfg</qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>password</qcom:propertyName>
+                                <qcom:propertyValue></qcom:propertyValue>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>action</qcom:propertyName>
+                                <qcom:propertyValue/>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>entity</qcom:propertyName>
+                                <qcom:propertyValue/>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>email</qcom:propertyName>
+                                <qcom:propertyValue/>
+                                </qcom:ttContext>
+                                <qcom:ttContext>
+                                <qcom:propertyQualifier>QAD</qcom:propertyQualifier>
+                                <qcom:propertyName>emailLevel</qcom:propertyName>
+                                <qcom:propertyValue/>
+                                </qcom:ttContext>
+                            </qcom:dsSessionContext>';
+
+        $qdocbody = '<dsPurchaseOrder>
+                        <PurchaseOrder>
+                            <poNbr>' . $ponbr . '</poNbr>
+                            <poVend>' . $povend . '</poVend>';
+
+                    foreach ($poddetail as $key => $datas) {
+                    $qdocbody .=    '<PurchaseOrderDetail>' .
+                            '<line>' . $datas['pod_line'] . '</line>' .
+                            '<sodPart>' . $datas['pod_part'] . '</sodPart>' .
+                            '<sodQtyOrd>' . $datas['pod_qty_ord'] . '</sodQtyOrd>' .                   
+                            '</PurchaseOrderDetail>';
+                    }
+
+        $qdocbody .=   '</PurchaseOrder>
+                                            </dsPurchaseOrder>';
+
+        $qdocfoot = '</maintainPurchaseOrder>
+                        </soapenv:Body>
+                    </soapenv:Envelope>';
+
+        $qdocRequest = $qdocHead . $qdocbody . $qdocfoot;
+
+        $curlOptions = array(
+            CURLOPT_URL => $qxUrl,
+            CURLOPT_CONNECTTIMEOUT => $timeout,        // in seconds, 0 = unlimited / wait indefinitely.
+            CURLOPT_TIMEOUT => $timeout + 120, // The maximum number of seconds to allow cURL functions to execute. must be greater than CURLOPT_CONNECTTIMEOUT
+            CURLOPT_HTTPHEADER => $this->httpHeader($qdocRequest),
+            CURLOPT_POSTFIELDS => preg_replace("/\s+/", " ", $qdocRequest),
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+        );
+
+        $getInfo = '';
+        $httpCode = 0;
+        $curlErrno = 0;
+        $curlError = '';
+
+
+        $qdocResponse = '';
+
+        $curl = curl_init();
+        if ($curl) {
+            curl_setopt_array($curl, $curlOptions);
+            $qdocResponse = curl_exec($curl);           // sending qdocRequest here, the result is qdocResponse.
+            //
+            $curlErrno = curl_errno($curl);
+            $curlError = curl_error($curl);
+            $first = true;
+            foreach (curl_getinfo($curl) as $key => $value) {
+                if (gettype($value) != 'array') {
+                if (!$first) $getInfo .= ", ";
+                $getInfo = $getInfo . $key . '=>' . $value;
+                $first = false;
+                if ($key == 'http_code') $httpCode = $value;
+                }
+            }
+            curl_close($curl);
+        }
+
+        if (is_bool($qdocResponse)) {
+            // Update Status kalau gagal.
+            $poMaster = PurchaseOrderMaster::where('po_nbr',$ponbr)->first();
+            $poMaster->po_status = 0;
+            $poMaster->save();
+            return false;
+        }
+
+        $xmlResp = simplexml_load_string($qdocResponse);
+
+        $xmlResp->registerXPathNamespace('ns1', 'urn:schemas-qad-com:xml-services');
+        $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
+
+        if ($qdocResult == "success" or $qdocResult == "warning") {
+            return [$qdocResult, $qdocResponse];
+        } else {
+            
+            $poMaster = PurchaseOrderMaster::where('po_nbr',$ponbr)->first();
+            $poMaster->po_status = 0;
+            $poMaster->save();
+            return [$qdocResult, $qdocResponse];
         }
     }
 }

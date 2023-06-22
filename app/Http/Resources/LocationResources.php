@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class LocationResources extends JsonResource
 {
@@ -14,10 +16,21 @@ class LocationResources extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+
+        $data = [
             't_domain' => $this['t_domain'],
-            't_site_loc' => $this['t_site'].' || '.$this['t_loc'],
-            't_loc_desc' => $this['t_site'].' - '.$this['t_loc'].' - '.$this['t_loc_desc'],
+            't_site_loc' => $this['t_loc'],
+            't_loc_desc' => $this['t_loc'].' - '.$this['t_loc_desc'],
         ];
+        Log::channel('loadRencanaProduksi')->info(collect($data));
+        return $data;
     }
+
+    // public function toResponse($request)
+    // {
+    //     return parent::toResponse($request)->withResponse(
+    //         response()->json(['data' => $this->toArray($request)]),
+    //         new Response('', 200)
+    //     );
+    // }
 }

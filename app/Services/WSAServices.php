@@ -8,6 +8,7 @@ use App\Models\Master\Qxwsa;
 use App\Models\Transaksi\PurchaseOrderDetail;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class WSAServices
 {
@@ -174,7 +175,8 @@ class WSAServices
                     "t_lvc_lot_next" => (string)$datas->t_lvc_lot_next,
                     't_isSelected' => false,
                     "t_lvc_um" => (string)$datas->t_lvc_um,
-                    "t_lvc_manufacturer" => (string)$datas->t_lvc_manufacturer
+                    "t_lvc_manufacturer" => (string)$datas->t_lvc_manufacturer,
+                    "t_lvc_country" => (string)$datas->t_lvc_country
                 ];
             }
 
