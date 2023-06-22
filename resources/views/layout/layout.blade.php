@@ -955,6 +955,7 @@
                         <ul aria-expanded="false">
                             <li><a href="{{ route('purchaseorder.index') }}">PO Browse</a></li>
                             <li><a href="{{ route('rencanaProd.index') }}">Rencana Produksi</a></li>
+                            <li><a href="{{ route('KetersediaanRawMaterial.index') }}">Ketersediaan Raw Material</a></li>
                         </ul>
                     </li>
                     @can('access_menu_it')

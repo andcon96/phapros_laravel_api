@@ -155,6 +155,16 @@ class ReceiptApiController extends Controller
     public function getreceiptdetail(Request $request)
     {
         $receiptnbr = $request->rcptnbr;
+        $data = ReceiptDetail::whereHas('getMaster',function($q) use($receiptnbr){
+            $q->where('rcpt_nbr',$receiptnbr);
+        })->selectRaw('rcptd_line,rcptd_part,rcptd_qty_arr,rcptd_qty_appr,rcptd_qty_rej,rcptd_qty_per_package,rcptd_loc,rcptd_lot,rcptd_batch,rcptd_site')->orderBy('rcptd_line','asc')->get()->toArray();
+        
+        return $data;
+        
+    }
+    public function getreceiptfoto(Request $request)
+    {
+        $receiptnbr = $request->rcptnbr;
         $data = ReceiptFileUpload::whereHas('getMaster',function($q) use($receiptnbr){
             $q->where('rcpt_nbr',$receiptnbr);
         })->selectRaw('rcptfu_path')->orderBy('rcptfu_is_ttd','asc')->get()->toArray();
