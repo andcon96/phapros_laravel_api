@@ -32,11 +32,12 @@ Route::middleware('auth:api')->group(function () {
     
     //laporan
     route::post('submitlaporan', [LaporanApiController::class, 'submitlaporan']);
-    route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);
+    route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);    
+    Route::get('getlaporanfoto',[LaporanApiController::class,'getlaporanfoto']);
 
     //receipt approval
     route::get('getreceipt', [ReceiptApiController::class, 'getreceipt']);
-    Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);
+    Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);    
     Route::get('getreceiptfoto',[ReceiptApiController::class,'getreceiptfoto']);
     route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);

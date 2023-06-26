@@ -377,27 +377,30 @@ class PurchaseOrderServices
                                 </qcom:ttContext>
                             </qcom:dsSessionContext>';
 
-        $qdocbody = '<dsPurchaseOrderReceive>
-                        <purchaseOrderReceive>
-                        <ordernum>' . $ponbr . '</ordernum>
-                        
-                        <yn>true</yn>
-                        <yn1>true</yn1>';
-
-        foreach ($data['getDetail'] as $key => $datas) {
-            $qdocbody .=     '<lineDetail>
-                                <line>' . $datas['rcptd_line'] . '</line>
-                                <multiEntry>true</multiEntry>
-                                <receiptDetail>
-                                    <location>' . $datas['rcptd_loc'] . '</location>
-                                    <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
-                                    <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
-                                    <podQad04>' .$datas['rcptd_batch']. '</podQad04>
-                                    <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
-                                    <serialsYn>true</serialsYn>
-                                </receiptDetail>
-                            </lineDetail>';
-        }
+            $qdocbody = '<dsPurchaseOrderReceive>
+                            <purchaseOrderReceive>
+                            <ordernum>' . $ponbr . '</ordernum>
+                            <psNbr>'.$data["getChecklist"]["rcptc_imr_nbr"].'</psNbr>
+                            <yn>true</yn>
+                            <yn1>true</yn1>';
+    
+            foreach ($data['getDetail'] as $key => $datas) {
+                $qdocbody .=     '<lineDetail>
+                                    <line>' . $datas['rcptd_line'] . '</line>
+                                    <multiEntry>true</multiEntry>
+                                    <receiptDetail>
+                                        <location>' . $datas['rcptd_loc'] . '</location>
+                                        <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
+                                        <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
+                                        <podQad04>' .$datas['rcptd_batch']. '</podQad04>
+                                        <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
+                                        <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
+                                        <chgAttr>true</chgAttr>
+                                        <chgExpire>2003-01-31</chgExpire>
+                                        <serialsYn>true</serialsYn>
+                                    </receiptDetail>
+                                </lineDetail>';
+            }
 
         $qdocfoot = '</purchaseOrderReceive>
         </dsPurchaseOrderReceive>

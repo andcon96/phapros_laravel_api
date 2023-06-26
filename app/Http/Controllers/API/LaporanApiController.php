@@ -11,6 +11,7 @@ use App\Models\Master\Prefix;
 use App\Models\Transaksi\LaporanReceiptModel;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptDetail;
+use App\Models\Transaksi\ReceiptFileUpload;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Services\WSAServices;
 use Exception;
@@ -25,24 +26,42 @@ class LaporanApiController extends Controller
     {
         $searchrcpt = '';
         
-
-        $data = ReceiptDetail::query()->with(['getMaster.getpo','getMaster.getTransport','getMaster.getLaporan.getUserLaporan'])
+        $data = ReceiptDetail::query()
+        ->with([
+            'getMaster.getpo',
+            'getMaster.getTransport',
+            'getMaster.getLaporan.getUserLaporan',
+            'getMaster.getChecklist',
+            'getItem'
+            ])
         ->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
-                $r->where('rcpt_nbr','like','%'.$request->rscptnbr.'%');
+                $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
             }
             $r->where('rcpt_status','=','created');
         })
         ->selectRaw('
-        min(rcptd_rcpt_id) as rcptd_rcpt_id,
-        min(rcptd_lot) as rcptd_lot,
-        min(rcptd_loc) as rcptd_loc,
+        rcptd_rcpt_id,
+        rcptd_lot,
+        rcptd_batch,
+        rcptd_loc,
         rcptd_part,
-        sum(rcptd_qty_arr) as sum_qty_arr,
-        sum(rcptd_qty_appr) as sum_qty_appr,
-        sum(rcptd_qty_rej) as sum_qty_rej
+        rcptd_qty_arr as sum_qty_arr,
+        rcptd_qty_appr as sum_qty_appr,
+        rcptd_qty_rej as sum_qty_rej
         ')
-        ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_rcpt_id')->groupBy('rcptd_part');
+        ->where('rcptd_qty_rej','>',0);
+        
+        // ->selectRaw('
+        // min(rcptd_rcpt_id) as rcptd_rcpt_id,
+        // min(rcptd_lot) as rcptd_lot,
+        // min(rcptd_loc) as rcptd_loc,
+        // rcptd_part,
+        // sum(rcptd_qty_arr) as sum_qty_arr,
+        // sum(rcptd_qty_appr) as sum_qty_appr,
+        // sum(rcptd_qty_rej) as sum_qty_rej
+        // ')
+        // ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_rcpt_id')->groupBy('rcptd_part');
         
         if($request->receiptnbr){
             $searchrcpt = ReceiptMaster::where('rcpt_nbr','=',$request->receiptnbr)->selectRaw('id')->first();
@@ -76,6 +95,7 @@ class LaporanApiController extends Controller
         $jmlmasuk = $request->jmlmasuk;
         $no = $request->no;
         $lot = $request->lot;
+        $batch = $request->batch;
         $tgl = $request->tgl;
         $supplier = $request->supplier;
         $komplain = $request->komplain;
@@ -104,6 +124,7 @@ class LaporanApiController extends Controller
             $laporanreceipt->laporan_jmlmasuk = $jmlmasuk;
             $laporanreceipt->laporan_no = $no;
             $laporanreceipt->laporan_lot = $lot;
+            $laporanreceipt->laporan_batch = $batch;
             $laporanreceipt->laporan_tgl = $tgl;
             $laporanreceipt->laporan_supplier = $supplier;
             $laporanreceipt->laporan_komplain = $komplain;
@@ -128,7 +149,7 @@ class LaporanApiController extends Controller
                         
                         $newdata = new LaporanImageModel();
                         $newdata->li_laporan_id = $laporanreceipt->id;
-                        $newdata->li_path = $fullfile;
+                        $newdata->li_path = '/uploadfilelaporan/'.$filename;
                         
                         $newdata->save();
                     }
@@ -144,6 +165,16 @@ class LaporanApiController extends Controller
             return 'error';
         }
         
+    }
+    
+    public function getlaporanfoto(Request $request){
+        $receiptnbr = $request->rcptnbr;
+                
+        $data = LaporanImageModel::whereHas('getMaster',function($q) use($receiptnbr){
+            $q->where('laporan_rcptnbr',$receiptnbr);
+        })->selectRaw('li_path')->orderBy('li_path','asc')->get()->toArray();
+        
+        return $data;
     }
 
 }

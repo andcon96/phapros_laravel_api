@@ -83,7 +83,7 @@ class ReceiptApiController extends Controller
             $datahist->save();
             // $nextappr = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->where('id','>',$datahist->id)->first();
             // if(!$nextappr){
-                $datarcptmstr = ReceiptMaster::with(['getDetail','getpo'])->where('rcpt_nbr',$receiptnbr)->first();
+                $datarcptmstr = ReceiptMaster::with(['getDetail','getpo','getChecklist'])->where('rcpt_nbr',$receiptnbr)->first();
                 
                 $qxtendreceipt = (new PurchaseOrderServices())->qxPurchaseOrderReceipt($datarcptmstr);
                 // $qxtendreceipt = 'success';
@@ -155,9 +155,12 @@ class ReceiptApiController extends Controller
     public function getreceiptdetail(Request $request)
     {
         $receiptnbr = $request->rcptnbr;
-        $data = ReceiptDetail::whereHas('getMaster',function($q) use($receiptnbr){
+        $data = ReceiptDetail::join('items','item_code','rcptd_part')->whereHas('getMaster',function($q) use($receiptnbr){
             $q->where('rcpt_nbr',$receiptnbr);
-        })->selectRaw('rcptd_line,rcptd_part,rcptd_qty_arr,rcptd_qty_appr,rcptd_qty_rej,rcptd_qty_per_package,rcptd_loc,rcptd_lot,rcptd_batch,rcptd_site')->orderBy('rcptd_line','asc')->get()->toArray();
+        })->selectRaw('rcptd_line,rcptd_part,rcptd_qty_arr,rcptd_qty_appr,rcptd_qty_rej,rcptd_qty_per_package,rcptd_loc,rcptd_lot,rcptd_batch,rcptd_site,item_desc')
+        ->orderBy('rcptd_line','asc')
+        ->get()
+        ->toArray();
         
         return $data;
         
