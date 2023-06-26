@@ -17,6 +17,9 @@ class ReceiptDetail extends Model
     public function getItem(){
         return $this->hasOne(Item::class,'item_code','rcptd_part');
     }
+    public function getLaporan(){
+        return $this->hasOne(LaporanReceiptModel::class,'laporan_rcptnbr','rcpt_nbr')->latest();
+    }
 
 
 }

@@ -35,6 +35,7 @@ class ReceiptApiController extends Controller
             'getMaster.getChecklist',
             'getMaster.getDocument',
             'getMaster.getKemasan',
+            'getItem'
         ])->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
                 $r->where('rcpt_nbr','like','%'.$request->rscptnbr.'%');
@@ -157,7 +158,20 @@ class ReceiptApiController extends Controller
         $receiptnbr = $request->rcptnbr;
         $data = ReceiptDetail::join('items','item_code','rcptd_part')->whereHas('getMaster',function($q) use($receiptnbr){
             $q->where('rcpt_nbr',$receiptnbr);
-        })->selectRaw('rcptd_line,rcptd_part,rcptd_qty_arr,rcptd_qty_appr,rcptd_qty_rej,rcptd_qty_per_package,rcptd_loc,rcptd_lot,rcptd_batch,rcptd_site,item_desc')
+        })->selectRaw(
+            'rcptd_line,
+            rcptd_part,
+            rcptd_qty_arr,
+            rcptd_qty_appr,
+            rcptd_qty_rej,
+            rcptd_qty_per_package,
+            rcptd_loc,
+            rcptd_lot,
+            rcptd_batch,
+            rcptd_site,
+            item_desc,
+            rcptd_exp_date,
+            rcptd_manu_date')
         ->orderBy('rcptd_line','asc')
         ->get()
         ->toArray();

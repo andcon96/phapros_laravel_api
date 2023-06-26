@@ -398,7 +398,7 @@ class PurchaseOrderServices
                                         <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
                                         <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
                                         <chgAttr>true</chgAttr>
-                                        <chgExpire>2003-01-31</chgExpire>
+                                        <chgExpire>'.$datas['rcptd_exp_date'].'</chgExpire>
                                         <serialsYn>true</serialsYn>
                                     </receiptDetail>
                                 </lineDetail>';
@@ -470,7 +470,7 @@ class PurchaseOrderServices
             return 'failed';
         }
     }
-
+/*
     public function loadpodaily($data)
     {
         $qxwsa = Qxwsa::firstOrFail();
@@ -643,4 +643,5 @@ class PurchaseOrderServices
             return [$qdocResult, $qdocResponse];
         }
     }
+    */
 }

@@ -34,6 +34,13 @@ class LaporanApiController extends Controller
             'getMaster.getChecklist',
             'getItem'
             ])
+        ->join('rcpt_mstr','rcpt_mstr.id','rcptd_det.rcptd_rcpt_id')
+        ->leftjoin('laporan_receipt',function($join)
+        {
+            $join->on('rcpt_nbr','=','laporan_rcptnbr');
+            $join->on('rcptd_lot','=','laporan_lot');
+            $join->on('rcptd_batch','=','laporan_batch');
+        })
         ->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
                 $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
@@ -48,7 +55,12 @@ class LaporanApiController extends Controller
         rcptd_part,
         rcptd_qty_arr as sum_qty_arr,
         rcptd_qty_appr as sum_qty_appr,
-        rcptd_qty_rej as sum_qty_rej
+        rcptd_qty_rej as sum_qty_rej,
+        laporan_komplain,
+        laporan_keterangan,
+        laporan_tgl,
+        laporan_komplaindetail,
+        laporan_no,
         ')
         ->where('rcptd_qty_rej','>',0);
         
@@ -169,9 +181,12 @@ class LaporanApiController extends Controller
     
     public function getlaporanfoto(Request $request){
         $receiptnbr = $request->rcptnbr;
-                
-        $data = LaporanImageModel::whereHas('getMaster',function($q) use($receiptnbr){
+        $batch = $request->batch;
+        $lot = $request->lot;
+        $data = LaporanImageModel::whereHas('getMaster',function($q) use($receiptnbr,$batch,$lot){
             $q->where('laporan_rcptnbr',$receiptnbr);
+            $q->where('laporan_batch',$batch);
+            $q->where('laporan_lot',$lot);
         })->selectRaw('li_path')->orderBy('li_path','asc')->get()->toArray();
         
         return $data;
