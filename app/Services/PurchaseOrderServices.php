@@ -89,6 +89,8 @@ class PurchaseOrderServices
                 // $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
                 $detailreceipt->rcptd_loc = $loc;
                 // $detailreceipt->rcptd_site = $site;
+                $detailreceipt->rcptd_exp_date = $datas->t_lvc_exp_detail_date;
+                $detailreceipt->rcptd_manu_date = $datas->t_lvc_manu_detail_date;
                 $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
                 $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
                 $detailreceipt->save();
