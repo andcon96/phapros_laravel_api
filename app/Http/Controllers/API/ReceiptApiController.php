@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Response;
 class ReceiptApiController extends Controller
 {
     public function getreceipt(Request $request)
-    {
+    {        
         $data = ReceiptDetail::query()->with([
             'getMaster.getpo',
             'getMaster.getTransport',
@@ -38,7 +38,7 @@ class ReceiptApiController extends Controller
             'getItem'
         ])->whereHas('getMaster',function($r) use($request){
             if($request->rcptnbr){
-                $r->where('rcpt_nbr','like','%'.$request->rscptnbr.'%');
+                $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
             }
             $r->where('rcpt_status','=','created');
         })
@@ -54,7 +54,7 @@ class ReceiptApiController extends Controller
 
         ');
         
-        $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get();
+        $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get()->take(10);
         return $data;
     }
 

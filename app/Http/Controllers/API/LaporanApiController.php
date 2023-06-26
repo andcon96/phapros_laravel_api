@@ -42,12 +42,13 @@ class LaporanApiController extends Controller
             $join->on('rcptd_batch','=','laporan_batch');
         })
         ->whereHas('getMaster',function($r) use($request){
-            if($request->rcptnbr){
-                $r->where('rcpt_nbr','like','%'.$request->rcptnbr.'%');
+            if($request->receiptnbr){
+                $r->where('rcpt_nbr','like','%'.$request->receiptnbr.'%');
             }
             $r->where('rcpt_status','=','created');
         })
         ->selectRaw('
+        rcpt_nbr,
         rcptd_rcpt_id,
         rcptd_lot,
         rcptd_batch,
@@ -60,7 +61,7 @@ class LaporanApiController extends Controller
         laporan_keterangan,
         laporan_tgl,
         laporan_komplaindetail,
-        laporan_no,
+        laporan_no
         ')
         ->where('rcptd_qty_rej','>',0);
         
@@ -75,15 +76,16 @@ class LaporanApiController extends Controller
         // ')
         // ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_rcpt_id')->groupBy('rcptd_part');
         
-        if($request->receiptnbr){
-            $searchrcpt = ReceiptMaster::where('rcpt_nbr','=',$request->receiptnbr)->selectRaw('id')->first();
-            if(!$searchrcpt){
-                return '';
-            }
-            $data = $data->where('rcptd_rcpt_id','=',$searchrcpt->id);
-        }
+        // if($request->receiptnbr){
+        //     // $searchrcpt = ReceiptMaster::where('rcpt_nbr','=',$request->receiptnbr)->selectRaw('id')->first();
+        //     // if(!$searchrcpt){
+        //     //     return '';
+        //     // }
+        //     // $data = $data->where('rcptd_rcpt_id','=',$searchrcpt->id);
+        //     $data = $data->where('rcpt_nbr','like','%'.$request->receiptnbr.'%');
+        // }
 
-        $data = $data->get();
+        $data = $data->get()->take(10);
          
 
         // if($request->search){
@@ -116,6 +118,7 @@ class LaporanApiController extends Controller
         $angkutan = $request->angkutan;
         $nopol = $request->nopol;
         $username = $request->username;
+        $imr = $request->imr;
         
         DB::beginTransaction();
         try{
@@ -137,6 +140,7 @@ class LaporanApiController extends Controller
             $laporanreceipt->laporan_no = $no;
             $laporanreceipt->laporan_lot = $lot;
             $laporanreceipt->laporan_batch = $batch;
+            $laporanreceipt->laporan_imr = $imr;
             $laporanreceipt->laporan_tgl = $tgl;
             $laporanreceipt->laporan_supplier = $supplier;
             $laporanreceipt->laporan_komplain = $komplain;
