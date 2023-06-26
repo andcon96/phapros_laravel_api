@@ -7,6 +7,7 @@ use App\Models\Master\Location;
 use App\Models\Master\Qxwsa;
 use App\Models\Transaksi\PurchaseOrderDetail;
 use App\Models\Transaksi\PurchaseOrderMaster;
+use App\Models\Transaksi\ReceiptDetail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection as SupportCollection;
@@ -156,6 +157,7 @@ class WSAServices
 
             foreach ($dataloop as $datas) {
                 $poddet = PurchaseOrderDetail::query()
+                    ->with('getMaster')
                     ->where('pod_po_id', $idmstr)
                     ->where('pod_line', (string)$datas->t_lvi_line)
                     ->where('pod_domain', (string)$datas->t_lvc_domain)
@@ -185,6 +187,22 @@ class WSAServices
                     $data = PurchaseOrderDetail::insert($datadetail);
                 }
 
+                $qtyreceive = 0;
+                $qtyarrival = 0;
+                
+                $rcptdetail = ReceiptDetail::query()
+                                ->with('getMaster')
+                                ->where('rcptd_part', (string)$datas->t_lvc_part)
+                                ->where('rcptd_line', (string)$datas->t_lvi_line)
+                                ->whereRelation('getMaster','rcpt_po_id',$idmstr)
+                                ->whereRelation('getMaster','rcpt_status','created')
+                                ->get();
+                
+                foreach($rcptdetail as $rows){
+                    $qtyreceive += $rows->rcptd_qty_appr;
+                    $qtyarrival += $rows->rcptd_qty_arr;
+                }
+
                 $arrayloop[] = [
                     "t_lvc_nbr" => (string)$datas->t_lvc_nbr,
                     "t_lvc_domain" => (string)$datas->t_lvc_domain,
@@ -208,7 +226,9 @@ class WSAServices
                     't_isSelected' => false,
                     "t_lvc_um" => (string)$datas->t_lvc_um,
                     "t_lvc_manufacturer" => (string)$datas->t_lvc_manufacturer,
-                    "t_lvc_country" => (string)$datas->t_lvc_country
+                    "t_lvc_country" => (string)$datas->t_lvc_country,
+                    "t_lvd_ongoing_qtyrcvd" => (string)$qtyreceive,
+                    "t_lvd_ongoing_qtyarr" => (string)$qtyarrival,
                 ];
             }
 
