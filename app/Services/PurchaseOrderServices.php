@@ -466,6 +466,7 @@ class PurchaseOrderServices
         if ($qdocResult == "success" or $qdocResult == "warning") {
             return 'success';
         } else {
+            Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocRequest);
             Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocResponse);
             return 'failed';
         }
