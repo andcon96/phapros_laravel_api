@@ -61,7 +61,8 @@ class LaporanApiController extends Controller
         laporan_keterangan,
         laporan_tgl,
         laporan_komplaindetail,
-        laporan_no
+        laporan_no,
+        rcptd_part_um
         ')
         ->where('rcptd_qty_rej','>',0);
         

@@ -171,7 +171,8 @@ class ReceiptApiController extends Controller
             rcptd_site,
             item_desc,
             rcptd_exp_date,
-            rcptd_manu_date')
+            rcptd_manu_date,
+            rcptd_part_um')
         ->orderBy('rcptd_line','asc')
         ->get()
         ->toArray();
