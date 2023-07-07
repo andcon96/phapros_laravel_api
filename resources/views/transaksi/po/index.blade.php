@@ -4,6 +4,18 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+                @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <strong>Error!</strong> 
+                    @foreach($errors->all() as $error)
+                        {{$error}}
+                    @endforeach
+                    <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+                    </button>
+                </div>
+                    
+                @endif
                 <form class="form-horizontal" method="get" action="{{ route('purchaseorder.index') }}">
                     <div class="form-group row col-md-12">
                         <div class="form-group row col-md-12">
@@ -272,11 +284,13 @@
 
             let output = '';
             $.each(rcphist, function(index, value) {
+                let imrno = value['get_checklist']['rcptc_imr_nbr'];
                 let arr_rcp = value['get_detail_reject'];
+                console.log(arr_rcp);
                 let arr_rcp_length = arr_rcp.length;
-
+                
                 output += '<tr>'
-                output += '<td>' + value['rcpt_nbr'] + '</td>'
+                output += '<td>' + value['rcpt_nbr'] + ' | ' + imrno + '</td>'
                 output += '<td>'
                 output +=
                     '<a href="#" class="detailreceipt ml-2 mr-2" data-rcpnbr="' +

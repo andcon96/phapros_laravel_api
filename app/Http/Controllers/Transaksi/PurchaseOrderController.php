@@ -24,7 +24,7 @@ class PurchaseOrderController extends Controller
         $listshipto = $po->groupBy('po_ship')->get();
 
 
-        $pomstr = PurchaseOrderMaster::query()->with(['getDetail','getHistoryReceipt.getDetailReject']);
+        $pomstr = PurchaseOrderMaster::query()->with(['getDetail','getHistoryReceipt.getDetailReject','getHistoryReceipt.getChecklist']);
         
         if($request->domain){
             $pomstr->where('po_domain',$request->domain);
@@ -101,6 +101,11 @@ class PurchaseOrderController extends Controller
                     ->orderBy('laporan_receipt.created_at','DESC')
                     ->groupBy(['rcpt_nbr', 'rcptd_lot', 'rcptd_batch'])
                     ->get();
+
+            if($data->count() == 0){
+                $errorMessage = 'Belum Dibuat Laporan Ketidaksesuaian, Silahkan dibuat terlebihdahulu.';
+                return back()->withErrors([$errorMessage]);
+            }
             
             $pdf = PDF::loadview(
                 'transaksi.po.receipt.exportpdf.blanko',
