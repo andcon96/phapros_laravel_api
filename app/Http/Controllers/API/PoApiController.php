@@ -23,6 +23,10 @@ class PoApiController extends Controller
             ->with('getDetail',
             'getApprovalHistReceiptByPO',
             'getHistoryReceipt.getDetail',
+            'getHistoryReceipt.getChecklist',
+            'getHistoryReceipt.getDocument',
+            'getHistoryReceipt.getKemasan',
+            'getHistoryReceipt.getTransport',
             'getHistoryReceipt.getHistoryApproval',
             'getHistoryReceipt.getIsOngoinApproval');
 

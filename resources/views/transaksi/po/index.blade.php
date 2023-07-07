@@ -4,6 +4,18 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+                @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <strong>Error!</strong> 
+                    @foreach($errors->all() as $error)
+                        {{$error}}
+                    @endforeach
+                    <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+                    </button>
+                </div>
+                    
+                @endif
                 <form class="form-horizontal" method="get" action="{{ route('purchaseorder.index') }}">
                     <div class="form-group row col-md-12">
                         <div class="form-group row col-md-12">
@@ -71,13 +83,11 @@
                                 <button class="btn btn-outline-secondary" class="btn bt-ref" id="btnsearch"><span
                                         class="btn-icon-left text-secondary"><i class="fa fa-search color-secondary"></i>
                                     </span>Search</button>
-                                    
-                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#exampleModalCenter"><span
-                                    class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
-                                </span>Download</button>
-                                {{-- <button type="button" class="btn btn-outline-secondary" id="btnexport"><span
-                                        class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
-                                    </span>Download</button> --}}
+
+                                <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+                                    data-target="#exampleModalCenter"><span class="btn-icon-left text-secondary"><i
+                                            class="fa fa-download color-secondary"></i>
+                                    </span>Download</button>
                             </div>
                         </div>
 
@@ -97,6 +107,7 @@
                                         <th width="12%">PO Order Date</th>
                                         <th width="12%">PO Due Date</th>
                                         <th width="12%">Status</th>
+                                        <th width="5%">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,16 +132,89 @@
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12" style="text-align:center;">
-                        <button type="button" class="btn btn-outline-secondary" id="btnexport" data-tipeexport="1"><span
-                            class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
-                        </span>Download PO Detail</button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnexport"
+                            data-tipeexport="1"><span class="btn-icon-left text-secondary"><i
+                                    class="fa fa-download color-secondary"></i>
+                            </span>Download PO Detail</button>
                     </div>
                     <div class="col-md-12 mt-3" style="text-align: center;">
-                        <button type="button" class="btn btn-outline-secondary" id="btnexport" data-tipeexport="2"><span
-                            class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
-                        </span>Download Approval Hist</button>
+                        <button type="button" class="btn btn-outline-secondary" id="btnexport"
+                            data-tipeexport="2"><span class="btn-icon-left text-secondary"><i
+                                    class="fa fa-download color-secondary"></i>
+                            </span>Download Approval Hist</button>
                     </div>
-                
+                    <div class="col-md-12 mt-3" style="text-align: center;">
+                        <button type="button" class="btn btn-outline-secondary" id="btnexport"
+                            data-tipeexport="3"><span class="btn-icon-left text-secondary"><i
+                                    class="fa fa-download color-secondary"></i>
+                            </span>Download Receipt Detail</button>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Receipt Modal -->
+    <div class="modal fade" id="exportModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">History Receipt & Export PDF</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="75%">Receipt Number</th>
+                                        <th width="25%">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bodyreceipt">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export PDF Modal -->
+    <div class="modal fade" id="modal2">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">History Receipt & Export PDF</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12" style="text-align:center;">
+                        <h3 id="rcpnbr"></h3>
+                        <input type="hidden" id="text_rcpnbr">
+                    </div>
+                    <div class="col-md-12" style="text-align:center;">
+                        <button type="button" class="btn btn-outline-secondary btnexportpdf" data-tipeexport="1"><span
+                                class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                            </span>Download Checklist Penerimaan</button>
+                    </div>
+                    <div class="col-md-12 mt-3 blanko" style="text-align: center;">
+                        <button type="button" class="btn btn-outline-secondary btnexportpdf" data-tipeexport="2"><span
+                                class="btn-icon-left text-secondary"><i class="fa fa-download color-secondary"></i>
+                            </span>Download Blanko Penyimpanan</button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
@@ -166,7 +250,7 @@
             $('#start_orddate').val(start_orddate);
             $('#end_orddate').val(end_orddate);
         });
-        
+
         $(document).on('click', '#btnexport', function(e) {
             e.preventDefault();
             let tipeexport = $(this).data('tipeexport');
@@ -177,18 +261,85 @@
             let start_orddate = $('#start_orddate').val();
             let end_orddate = $('#end_orddate').val();
 
-            let datarequest  = "?domain=:domain&ponbr=:ponbr&vendor=:vendor&shipto=:shipto&start_orddate=:start_orddate&end_orddate=:end_orddate&tipe=:tipe"; 
-            
+            let datarequest =
+                "?domain=:domain&ponbr=:ponbr&vendor=:vendor&shipto=:shipto&start_orddate=:start_orddate&end_orddate=:end_orddate&tipe=:tipe";
+
             datarequest = datarequest.replace(':domain', domain);
             datarequest = datarequest.replace(':ponbr', ponbr);
             datarequest = datarequest.replace(':vendor', vendor);
             datarequest = datarequest.replace(':shipto', shipto);
             datarequest = datarequest.replace(':start_orddate', start_orddate);
             datarequest = datarequest.replace(':end_orddate', end_orddate);
-            datarequest = datarequest.replace(':tipe',tipeexport);
-            
-            
+            datarequest = datarequest.replace(':tipe', tipeexport);
+
+
             let url = "{{ route('ExportPO') }}" + datarequest;
+
+            window.open(url, '_blank');
+        });
+
+        $(document).on('click', '.viewreceipt', function(e) {
+            let ponbr = $(this).data('ponbr');
+            let rcphist = $(this).data('rcpdetail');
+
+            let output = '';
+            $.each(rcphist, function(index, value) {
+                let imrno = value['get_checklist']['rcptc_imr_nbr'];
+                let arr_rcp = value['get_detail_reject'];
+                console.log(arr_rcp);
+                let arr_rcp_length = arr_rcp.length;
+                
+                output += '<tr>'
+                output += '<td>' + value['rcpt_nbr'] + ' | ' + imrno + '</td>'
+                output += '<td>'
+                output +=
+                    '<a href="#" class="detailreceipt ml-2 mr-2" data-rcpnbr="' +
+                    value['rcpt_nbr'] + '""><i class="fa fa-eye color-secondary"></i></a> '
+                output +=
+                    '<a href="#" class="downloadpdf" data-toggle="modal" data-target="#modal2" data-rcpnbr="' +
+                    value['rcpt_nbr'] + '"" data-hasreject="' + arr_rcp_length +
+                    '"><i class="fa fa-download color-secondary"></i></a> '
+                output += '</td>'
+                output += '</tr>'
+            });
+
+            $('#bodyreceipt').html('').append(output);
+        });
+
+        $(document).on('click', '.downloadpdf', function(e) {
+            let rcpnbr = $(this).data('rcpnbr');
+            let hasreject = $(this).data('hasreject');
+
+            hasreject == 0 ? $('.blanko').hide() : $('.blanko').show() ;
+
+            $('#rcpnbr').html(rcpnbr);
+            $('#text_rcpnbr').val(rcpnbr);
+        })
+
+        $(document).on('click', '.detailreceipt', function(e) {
+            e.preventDefault();
+
+            let rcpnbr = $(this).data('rcpnbr');
+
+            let datarequest = "?rcpnbr=:rcpnbr";
+            datarequest = datarequest.replace(':rcpnbr', rcpnbr);
+
+            let url = "{{ route('viewReceipt') }}" + datarequest;
+
+            window.open(url, '_blank');
+        });
+
+        $(document).on('click', '.btnexportpdf', function(e) {
+            e.preventDefault();
+            let tipeexport = $(this).data('tipeexport'); // 1 Checklist Penerimaan Barang , 2 Blanko Penyimpanan
+            let rcpnbr = $('#text_rcpnbr').val();
+
+            let datarequest = "?rcpnbr=:rcpnbr&tipe=:tipe";
+
+            datarequest = datarequest.replace(':tipe', tipeexport);
+            datarequest = datarequest.replace(':rcpnbr', rcpnbr);
+
+            let url = "{{ route('ExportReceiptPDF') }}" + datarequest;
 
             window.open(url, '_blank');
         })

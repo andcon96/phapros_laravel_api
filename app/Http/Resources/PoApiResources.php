@@ -32,7 +32,7 @@ class PoApiResources extends JsonResource
             }),2),
             'po_details' => $this->getDetail,
             'po_list_receipt' => $this->getHistoryReceipt,
-            'po_list_approval' => $this->getApprovalHistReceiptByPO
+            'po_list_approval' => $this->getApprovalHistReceiptByPO,
         ];
     }
 }

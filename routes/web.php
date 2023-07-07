@@ -39,7 +39,9 @@ Route::group(['middleware' => ['auth']], function () {
     // Transaksi
     //================================
     Route::resource('purchaseorder',PurchaseOrderController::class);
+    Route::get('viewreceipt',[PurchaseOrderController::class, 'viewreceipt'])->name('viewReceipt');
     Route::get('exportpo',[PurchaseOrderController::class, 'exportpo'])->name('ExportPO');
+    Route::get('exportpdfrcp',[PurchaseOrderController::class, 'exportpdfrcp'])->name('ExportReceiptPDF');
     
 
     //================================

@@ -46,9 +46,11 @@ class ReceiptMaster extends Model
     public function getIsOngoinApproval(){
         return $this->hasMany(ApprovalHist::class,'apphist_receipt_id')->whereNotNull('apphist_approved_date');
     }
+
     public function getLaporan(){
         return $this->hasOne(LaporanReceiptModel::class,'laporan_rcptnbr','rcpt_nbr')->latest();
     }
+
     public function getAppr(){
         return $this->hasOne(ApprovalHist::class,'apphist_receipt_id','id');
     }
@@ -56,6 +58,7 @@ class ReceiptMaster extends Model
     public function getDetailReject(){
         return $this->hasMany(ReceiptDetail::class,'rcptd_rcpt_id')->where('rcptd_qty_rej','>',0);
     }
+    
     public function getFileUpload(){
         return $this->hasMany(ReceiptFileUpload::class,'rcptfu_rcpt_id');
     }
