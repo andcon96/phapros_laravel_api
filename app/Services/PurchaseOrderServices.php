@@ -389,18 +389,18 @@ class PurchaseOrderServices
             foreach ($data['getDetail'] as $key => $datas) {
                 $qdocbody .=     '<lineDetail>
                                     <line>' . $datas['rcptd_line'] . '</line>
-                                    <multiEntry>true</multiEntry>
-                                    <receiptDetail>
-                                        <location>' . $datas['rcptd_loc'] . '</location>
-                                        <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
-                                        <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
-                                        <podQad04>' .$datas['rcptd_batch']. '</podQad04>
-                                        <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
-                                        <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
-                                        <chgAttr>true</chgAttr>
-                                        <chgExpire>'.$datas['rcptd_exp_date'].'</chgExpire>
-                                        <serialsYn>true</serialsYn>
-                                    </receiptDetail>
+                                    <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
+                                    <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
+                                    <location>' . $datas['rcptd_loc'] . '</location>
+                                    <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
+                                    <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
+                                    <podQad04>' .$datas['rcptd_batch']. '</podQad04>
+                                    <multiEntry>false</multiEntry>
+                                    <chgAttr>true</chgAttr>
+                                    <chgExpire>'.$datas['rcptd_exp_date'].'</chgExpire>
+                                    <serialsYn>true</serialsYn>
+                                    
+                                    
                                 </lineDetail>';
             }
 

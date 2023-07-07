@@ -64,37 +64,14 @@ class LaporanApiController extends Controller
         laporan_no,
         rcptd_part_um
         ')
-        ->where('rcptd_qty_rej','>',0);
+        ->where('rcptd_qty_rej','>',0)
+        ->groupBy('laporan_rcptnbr')
+        ->groupBy('laporan_batch')
+        ->groupBy('laporan_lot');
         
-        // ->selectRaw('
-        // min(rcptd_rcpt_id) as rcptd_rcpt_id,
-        // min(rcptd_lot) as rcptd_lot,
-        // min(rcptd_loc) as rcptd_loc,
-        // rcptd_part,
-        // sum(rcptd_qty_arr) as sum_qty_arr,
-        // sum(rcptd_qty_appr) as sum_qty_appr,
-        // sum(rcptd_qty_rej) as sum_qty_rej
-        // ')
-        // ->where('rcptd_qty_rej','>',0)->groupBy('rcptd_rcpt_id')->groupBy('rcptd_part');
-        
-        // if($request->receiptnbr){
-        //     // $searchrcpt = ReceiptMaster::where('rcpt_nbr','=',$request->receiptnbr)->selectRaw('id')->first();
-        //     // if(!$searchrcpt){
-        //     //     return '';
-        //     // }
-        //     // $data = $data->where('rcptd_rcpt_id','=',$searchrcpt->id);
-        //     $data = $data->where('rcpt_nbr','like','%'.$request->receiptnbr.'%');
-        // }
 
         $data = $data->get()->take(10);
          
-
-        // if($request->search){
-        //     $data->where('po_nbr','LIKE','%'.$request->search.'%')
-        //          ->orWhere('po_vend','LIKE','%'.$request->search.'%');
-        // }
-
-        // $data = $data->paginate(10);
         
         return $data;
         

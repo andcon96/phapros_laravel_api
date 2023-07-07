@@ -180,12 +180,57 @@ class ReceiptApiController extends Controller
         return $data;
         
     }
+
     public function getreceiptfoto(Request $request)
     {
         $receiptnbr = $request->rcptnbr;
         $data = ReceiptFileUpload::whereHas('getMaster',function($q) use($receiptnbr){
             $q->where('rcpt_nbr',$receiptnbr);
         })->selectRaw('rcptfu_path')->orderBy('rcptfu_is_ttd','asc')->get()->toArray();
+        
+        return $data;
+        
+    }
+
+    public function getlaporanketidaksesuaian(Request $request)
+    {
+        $receiptnbr = $request->rcptnbr;
+        // $data = LaporanReceiptModel::
+        // where('laporan_rcptnbr','=',$receiptnbr)
+        // ->groupBy('laporan_rcptnbr')
+        // ->groupBy('laporan_lot')
+        // ->groupBy('laporan_batch')
+        // ->selectRaw(
+        //     'laporan_imr,
+        //     laporan_lot,
+        //     laporan_batch,
+        //     laporan_jmlmasuk,
+        //     laporan_komplaindetail,
+        //     laporan_komplain,
+        //     laporan_keterangan')
+        // ->get()
+        // ->toArray();
+        
+        $data = LaporanReceiptModel::
+        
+        where('laporan_rcptnbr','=',$receiptnbr)
+        
+        // ->orderBy('id','desc')
+        ->groupby('laporan_rcptnbr')
+        ->groupby('laporan_lot')
+        ->groupby('laporan_batch')
+        ->selectRaw(
+            'laporan_rcptnbr,
+            max(laporan_imr) as laporan_imr,
+            laporan_lot,
+            laporan_batch,
+            max(laporan_jmlmasuk) as laporan_jmlmasuk,
+            max(laporan_komplaindetail) as laporan_komplaindetail ,
+            max(laporan_komplain) as laporan_komplain,
+            max(laporan_keterangan) as laporan_keterangan')
+        // ->get()
+        ->get()
+        ->toArray();
         
         return $data;
         
