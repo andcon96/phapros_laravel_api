@@ -159,7 +159,9 @@ class ReceiptApiController extends Controller
         $data = ReceiptDetail::join('items','item_code','rcptd_part')->whereHas('getMaster',function($q) use($receiptnbr){
             $q->where('rcpt_nbr',$receiptnbr);
         })->selectRaw(
-            'rcptd_line,
+            'rcptd_det.id as iddetail,
+            rcptd_rcpt_id,
+            rcptd_line,
             rcptd_part,
             rcptd_qty_arr,
             rcptd_qty_appr,

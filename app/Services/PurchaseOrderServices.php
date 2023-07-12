@@ -293,6 +293,137 @@ class PurchaseOrderServices
         }
     }
 
+    public function saveEditDetail($data)
+    {
+        $newdata = json_decode($data['data']);
+
+        $idmaster = '';
+
+        DB::beginTransaction();
+        try {
+            // Save Receipt Detail
+            foreach ($newdata as $key => $datas) {
+                $loc = $datas->t_lvc_loc;
+                $detailreceipt = ReceiptDetail::find($datas->t_lvc_nbr);
+                if($detailreceipt){
+                    $idmaster = $detailreceipt->rcptd_rcpt_id;
+
+                    $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
+                    $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
+                    $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
+                    $detailreceipt->rcptd_loc = $loc;
+                    $detailreceipt->rcptd_exp_date = $datas->t_lvc_exp_detail_date;
+                    $detailreceipt->rcptd_manu_date = $datas->t_lvc_manu_detail_date;
+                    $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
+                    $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
+                    $detailreceipt->save();
+                }
+            }
+
+            // Save Checklist
+            // Validasi IMO No apakah sudah ada di DB & Update Prefix RN IMR
+            $imrno = $data['imrno'];
+            $yearnow = Carbon::now()->format('y');
+
+            $cekchecklist = ReceiptChecklist::where('rcptc_rcpt_id',$idmaster)->first();
+            if($cekchecklist){
+                $cekchecklist->rcptc_article_nbr = $data['articleno'];
+                $cekchecklist->rcptc_imr_date = $data['imrdate'];
+                $cekchecklist->rcptc_arrival_date = $data['arrivaldate'];
+                $cekchecklist->rcptc_prod_date = $data['productiondate'];
+                $cekchecklist->rcptc_exp_date = $data['expiredate'];
+                $cekchecklist->rcptc_manufacturer = $data['manufacturer'];
+                $cekchecklist->rcptc_country = $data['country'];
+                $cekchecklist->save();
+            }
+            
+            $cekdocument = ReceiptDocument::where('rcptdoc_rcpt_id',$idmaster)->First();
+            if($cekdocument){
+                $cekdocument->rcptdoc_is_certofanalys = $data['is_certofanalys'] == 'true' ? 1 : 0;
+                $cekdocument->rcptdoc_certofanalys = $data['certofanalys'];
+                $cekdocument->rcptdoc_is_msds = $data['is_msds'] == 'true' ? 1 : 0;
+                $cekdocument->rcptdoc_msds = $data['msds'];
+                $cekdocument->rcptdoc_is_forwarderdo = $data['is_forwarderdo'] == 'true' ? 1 : 0;
+                $cekdocument->rcptdoc_forwarderdo = $data['forwarderdo'];
+                $cekdocument->rcptdoc_is_packinglist = $data['is_packinglist'] == 'true' ? 1 : 0;
+                $cekdocument->rcptdoc_packinglist = $data['packinglist'];
+                $cekdocument->rcptdoc_is_otherdocs = $data['is_otherdocs'] == 'true' ? 1 : 0;
+                $cekdocument->rcptdoc_otherdocs = $data['otherdocs'];
+                $cekdocument->save();
+            }
+
+            // Save Kemasan
+            $cekkemasan = ReceiptKemasan::where('rcptk_rcpt_id',$idmaster)->first();
+            if($cekkemasan){
+                $cekkemasan->rcptk_kemasan_sacdos = $data['kemasan_sacdos'] == 'true' ? 1 : 0;
+                $cekkemasan->rcptk_kemasan_sacdos_desc = $data['is_damage_kemasan_sacdos'];
+                $cekkemasan->rcptk_kemasan_drumvat = $data['kemasan_drumvat'] == 'true' ? 1 : 0;
+                $cekkemasan->rcptk_kemasan_drumvat_desc = $data['is_damage_kemasan_drumvat'];
+                $cekkemasan->rcptk_kemasan_palletpeti = $data['kemasan_palletpeti'] == 'true' ? 1 : 0;
+                $cekkemasan->rcptk_kemasan_palletpeti_desc = $data['is_damage_kemasan_palletpeti'];
+                $cekkemasan->rcptk_is_clean = $data['is_clean'] == 'null' ? 1 : $data['is_clean'];
+                $cekkemasan->rcptk_is_clean_desc = $data['keterangan_is_clean'];
+                $cekkemasan->rcptk_is_dry = $data['is_dry'] == 'null' ? 1 : $data['is_dry'];
+                $cekkemasan->rcptk_is_dry_desc = $data['keterangan_is_dry'];
+                $cekkemasan->rcptk_is_not_spilled = $data['is_not_spilled'] == 'null' ? 1 : $data['is_not_spilled'];
+                $cekkemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
+                $cekkemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : 0;
+                $cekkemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : $data['is_manufacturer_label'];
+                $cekkemasan->save();
+            }
+
+            // Save Angkutan
+            $cektransport = ReceiptTransport::where('rcptt_rcpt_id',$idmaster)->first();
+            if($cektransport){
+                $cektransport->rcptt_transporter_no  = $data['transporter_no'];
+                $cektransport->rcptt_police_no  = $data['police_no'];
+                $cektransport->rcptt_is_clean  = $data['is_clean_angkutan'] == 'null' ? 1 : $data['is_clean_angkutan'];
+                $cektransport->rcptt_is_clean_desc  = $data['keterangan_is_clean_angkutan'];
+                $cektransport->rcptt_is_dry  = $data['is_dry_angkutan'] == 'null' ? 1 : $data['is_dry_angkutan'];
+                $cektransport->rcptt_is_dry_desc  = $data['keterangan_is_dry_angkutan'];
+                $cektransport->rcptt_is_not_spilled  = $data['is_not_spilled_angkutan'] == 'null' ? 1 : $data['is_not_spilled_angkutan'];
+                $cektransport->rcptt_is_not_spilled_desc  = $data['keterangan_is_not_spilled_angkutan'];
+                $cektransport->rcptt_is_position_single  = $data['material_position'] == 'null' ? 1 : $data['material_position'];
+                $cektransport->rcptt_is_position_single_desc  = $data['keterangan_material_position'];
+                $cektransport->rcptt_is_segregated  = $data['is_segregated'] == 'null' ? 1 : $data['is_segregated'];
+                $cektransport->rcptt_is_segregated_desc  = $data['keterangan_is_segregated'];
+                $cektransport->rcptt_angkutan_catatan = $data['angkutan_catatan'];
+                $cektransport->rcptt_kelembapan = $data['kelembapan'];
+                $cektransport->rcptt_suhu = $data['suhu'];
+                $cektransport->save();
+            }
+
+            // Upload File
+            if (array_key_exists('images', $data)) {
+                foreach ($data['images'] as $key => $dataImage) {
+                    if ($dataImage->isValid()) {
+                        $dataTime = date('Ymd_His');
+                        $filename = $dataTime . '-' . $dataImage->getClientOriginalName();
+
+                        // Simpan File Upload pada Public
+                        $savepath = public_path('/uploadfile/');
+                        $dataImage->move($savepath, $filename);
+
+                        $fullfile = $savepath.$filename;
+                        
+                        $newdata = new ReceiptFileUpload();
+                        $newdata->rcptfu_rcpt_id = $idmaster;
+                        $newdata->rcptfu_path = '/uploadfile/'.$filename;
+                        $newdata->rcptfu_is_ttd = 0;
+                        $newdata->save();
+                    }
+                }
+            }
+
+            DB::commit();
+            return [true, $idmaster];
+        } catch (Exception $e) {
+            DB::rollback();
+            Log::channel('savepo')->info($e);
+            return [false];
+        }
+    }
+
     public function sendmailapproval($receiptid)
     {
         $datareceipt = ReceiptMaster::with('getpo','getDetail','getUser')->findOrFail($receiptid);

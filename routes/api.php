@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function () {
     route::get('wsapo', [PoApiController::class, 'wsapo']);
     route::get('getpo', [PoApiController::class, 'getpo']);
     route::post('savepo', [PoApiController::class, 'savepo']);
+    route::post('saveeditpo', [PoApiController::class, 'saveeditpo']);
     route::get('wsaloc', [PoApiController::class, 'wsaloc']);
     route::get('testrec', [PoApiController::class, 'getreceipt']);
     route::get('getprefiximr', [PoApiController::class, 'getprefiximr']);

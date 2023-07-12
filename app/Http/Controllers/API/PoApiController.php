@@ -103,4 +103,29 @@ class PoApiController extends Controller
 
         dd($totalArrival, $totalApprove, $totalReject);
     }
+
+    public function saveeditpo(Request $request){
+        $data = $request->all();
+
+        $saveddata = (new PurchaseOrderServices())->saveEditDetail($data);
+        if($saveddata[0] == true){
+            // 0 => Status True/False , 1 => Rcpt ID
+            $datareceipt = ReceiptMaster::with(['getDetailReject','getpo','getTransport','getLaporan.getUserLaporan'])->find($saveddata[1]);
+            $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
+            $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
+            $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
+            return response()->json([
+                "message" => "Success",
+                "ponbr" => $datareceipt->getpo->po_nbr ?? '',
+                "datareceipt" => $datareceipt,
+                "totalArrival" => $totalArrival,
+                "totalApprove" => $totalApprove,
+                "totalReject" => $totalReject,
+            ],200);
+        }else{
+            return response()->json([
+                "message" => "Failed"
+            ],400);
+        }
+    }
 }
