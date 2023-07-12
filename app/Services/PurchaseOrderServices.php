@@ -320,6 +320,13 @@ class PurchaseOrderServices
                 }
             }
 
+            // Rubah Status Master
+            $cekmaster = ReceiptMaster::find($idmaster);
+            if($cekmaster){
+                $cekmaster->rcpt_status = 'created';
+                $cekmaster->save();
+            }
+
             // Save Checklist
             // Validasi IMO No apakah sudah ada di DB & Update Prefix RN IMR
             $imrno = $data['imrno'];
