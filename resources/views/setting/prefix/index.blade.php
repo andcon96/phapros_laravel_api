@@ -83,9 +83,9 @@
                                     <tbody id="bodyprefiximr">
                                         @foreach ($prefiximr as $prefiximrs)
                                             <tr class="btn-reveal-trigger">
-                                                <td class="py-2">{{ $prefiximrs->pin_prefix }}</td>
-                                                <td class="py-2">{{ $prefiximrs->pin_rn }}</td>
-                                                <td></td>
+                                                <td class="py-2"><input type="text" class="form-control pr" autocomplete="off" name="prefixedit[]"  style="height:37px;background-color:#d4d7da" value="{{ $prefiximrs->pin_prefix }}" disabled></td>
+                                                <td class="py-2"><input type="number" oninput="this.value=this.value.slice(0,this.maxLength)" class="form-control rn" style="height:37px;background-color:#d4d7da" name="rnedit[]" min="1" step="1" maxlength="6" value="{{ $prefiximrs->pin_rn }}" disabled></td>
+                                                <td data-title="Action"><button type="button" class="ibtnEdit btn btn-info btn-focus" ><i class="fa fa-pencil"></i></button></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -144,6 +144,14 @@
         $("table").on("click", ".ibtnDel", function(event) {
             $(this).closest("tr").remove();
             counter -= 1
+        });
+
+        $("table").on("click", ".ibtnEdit", function(event) {
+            $(this).closest("tr").find("td").find(".rn").prop('disabled', false);
+            $(this).closest("tr").find("td").find(".rn").css("background-color", "#ffffff");
+            $(this).closest("tr").find("td").find(".pr").prop('disabled', false);
+            $(this).closest("tr").find("td").find(".pr").prop('readonly', true);
+            
         });
     </script>
 @endsection

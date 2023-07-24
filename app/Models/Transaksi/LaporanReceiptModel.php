@@ -15,4 +15,7 @@ class LaporanReceiptModel extends Model
         
         return $this->hasOne(User::class,'id_anggota','laporan_anggota');
     }
+    public function getfoto(){
+        return $this->hasMany(LaporanImageModel::class,'li_laporan_id','id');
+    }
 }

@@ -205,7 +205,7 @@ class UserController extends Controller
         }
         catch(Exception $err){
             DB::rollBack();
-            dd($err);
+            // dd($err);
             alert()->error('Error', 'User failed to update!');
             return redirect()->route('usermaint.index');
         }

@@ -139,6 +139,7 @@ class PurchaseOrderServices
             $checklist = new ReceiptChecklist();
             $checklist->rcptc_rcpt_id = $idrcpmstr;
             $checklist->rcptc_imr_nbr = $imrno;
+            $checklist->rcptc_do_nbr = $data['dono'];
             $checklist->rcptc_article_nbr = $data['articleno'];
             $checklist->rcptc_imr_date = $data['imrdate'];
             $checklist->rcptc_arrival_date = $data['arrivaldate'];
@@ -327,6 +328,12 @@ class PurchaseOrderServices
                 $cekmaster->save();
             }
 
+            // hapus histori approve
+            // $getapprovalhist = ApprovalHist::where('apphist_receipt_id',$idmaster)->first();
+            // if($getapprovalhist){
+            //     ApprovalHist::where('apphist_receipt_id',$idmaster)->delete();
+            // }
+
             // Save Checklist
             // Validasi IMO No apakah sudah ada di DB & Update Prefix RN IMR
             $imrno = $data['imrno'];
@@ -334,6 +341,7 @@ class PurchaseOrderServices
 
             $cekchecklist = ReceiptChecklist::where('rcptc_rcpt_id',$idmaster)->first();
             if($cekchecklist){
+                $cekchecklist->rcptc_do_nbr = $data['dono'];
                 $cekchecklist->rcptc_article_nbr = $data['articleno'];
                 $cekchecklist->rcptc_imr_date = $data['imrdate'];
                 $cekchecklist->rcptc_arrival_date = $data['arrivaldate'];
@@ -515,17 +523,17 @@ class PurchaseOrderServices
                                 <qcom:propertyName>emailLevel</qcom:propertyName>
                                 <qcom:propertyValue/>
                                 </qcom:ttContext>
-                            </qcom:dsSessionContext>';
-
-            $qdocbody = '<dsPurchaseOrderReceive>
+                            </qcom:dsSessionContext>
+                            <dsPurchaseOrderReceive>';
+                            $qdocbody = '';
+                            foreach ($data['getDetail'] as $key => $datas) {
+            $qdocbody .= '
                             <purchaseOrderReceive>
                             <ordernum>' . $ponbr . '</ordernum>
-                            <psNbr>'.$data["getChecklist"]["rcptc_imr_nbr"].'</psNbr>
+                            <psNbr>'.$data["getChecklist"]["rcptc_do_nbr"].'</psNbr>
                             <yn>true</yn>
-                            <yn1>true</yn1>';
-    
-            foreach ($data['getDetail'] as $key => $datas) {
-                $qdocbody .=     '<lineDetail>
+                            <yn1>true</yn1>
+                            <lineDetail>
                                     <line>' . $datas['rcptd_line'] . '</line>
                                     <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
                                     <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
@@ -539,10 +547,11 @@ class PurchaseOrderServices
                                     <serialsYn>true</serialsYn>
                                     
                                     
-                                </lineDetail>';
+                                </lineDetail>
+                                </purchaseOrderReceive>';
             }
 
-        $qdocfoot = '</purchaseOrderReceive>
+        $qdocfoot = '
         </dsPurchaseOrderReceive>
         </receivePurchaseOrder>
                         </soapenv:Body>

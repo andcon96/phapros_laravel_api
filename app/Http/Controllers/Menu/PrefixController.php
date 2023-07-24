@@ -44,7 +44,7 @@ class PrefixController extends Controller
      */
     public function store(Request $request)
     {
-        
+        // dd($request->all());
         $prefix = Prefix::firstOrNew(['id'=>'1']);
         $prefix->prefix_rcpt_pr = $request->prefixrcpt;
         $prefix->prefix_rcpt_rn = $request->rnrcpt;
@@ -58,6 +58,15 @@ class PrefixController extends Controller
                 $prefiximr->pin_prefix = $datas;
                 $prefiximr->pin_rn = '000000';
                 $prefiximr->save();
+            }
+        }
+
+        //edit imr
+        if($request->prefixedit){
+            foreach($request->prefixedit as $key => $dataedit){
+                $dataprefiximr = PrefixIMR::where('pin_prefix',$dataedit)->first();
+                $dataprefiximr->pin_rn = $request->rnedit[$key];
+                $dataprefiximr->save();
             }
         }
 
