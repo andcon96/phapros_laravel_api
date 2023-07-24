@@ -56,11 +56,13 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('usermaint', UserController::class);
         //prefix maintenance
         Route::resource('prefixmaint', PrefixController::class);
+        Route::post('updaternimr', [PrefixController::class, 'updaternimr'])->name('updateRunningNbrIMR');
         //qxwsa maintenance
         Route::resource('qxwsa', QxwsaController::class);
         //item maintenance
         Route::resource('itemmaint', ItemController::class);
         Route::post('loaditem', [ItemController::class, 'loaditem'])->name('LoadItem');
+        Route::post('updaternitem', [ItemController::class, 'updaternitem'])->name('updateRunningNbrItem');
     });
 
     // Menu Report MRP

@@ -30,4 +30,14 @@ class ItemController extends Controller
         
         return back();
     }
+
+    public function updaternitem(Request $request){
+        
+        $item = Item::findOrFail($request->e_id);
+        $item->item_rn = $request->e_yearrn.$request->e_rn;
+        $item->save();
+
+        alert()->success('Success', 'Prefix Item Updated');
+        return back();
+    }
 }

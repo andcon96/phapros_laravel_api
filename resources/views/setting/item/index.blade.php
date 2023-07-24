@@ -46,6 +46,7 @@
                                         <th width="12%">Item Code</th>
                                         <th width="24%">Item Desc</th>
                                         <th width="12%">Running Number</th>
+                                        <th width="6%">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -64,6 +65,59 @@
     </div>
 
 
+    {{-- Modal Edit --}}
+    <div class="modal fade" id="editModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Item RN</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                    </button>
+                </div>
+
+                <form class="form-horizontal" id="formedit" method="post"
+                action="{{ route('updateRunningNbrItem') }}">
+                    {{ method_field('post') }}
+                    {{ csrf_field() }}
+                    <div class="modal-body">
+                        <div class="col-lg-12">
+                            <input type="hidden" id="e_id" name="e_id">
+                            <div class="form-group row">
+                                <label for="e_item" class="col-md-4 col-form-label text-md-right">Item</label>
+                                <div class="col-md-8 {{ $errors->has('uname') ? 'has-error' : '' }}"><input
+                                        id="e_item" type="text" class="form-control" name="e_item"
+                                        value="{{ old('e_item') }}" autocomplete="off" required autofocus readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="e_yearrn" class="col-md-4 col-form-label text-md-right">Year (2 Digit)</label>
+                                <div class="col-md-5 {{ $errors->has('uname') ? 'has-error' : '' }}"><input
+                                        id="e_yearrn" minlength="2" maxlength="2" type="text"
+                                        class="form-control" name="e_yearrn" value="{{ old('e_yearrn') }}"
+                                        autocomplete="off" required autofocus>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="e_rn" class="col-md-4 col-form-label text-md-right">Running Number</label>
+                                <div class="col-md-5 {{ $errors->has('uname') ? 'has-error' : '' }}"><input
+                                        id="e_rn" type="text" class="form-control" name="e_rn"
+                                        value="{{ old('e_rn') }}" minlength="4" maxlength="4" autocomplete="off"
+                                        required autofocus>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success bt-action" id="c_btnconf">Save</button>
+                        <button type="button" class="btn bt-action" id="c_btnloading" style="display:none">
+                            <i class="fa fa-circle-o-notch fa-spin"></i> &nbsp;Loading
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div id="loader" class="lds-dual-ring hidden overlay"></div>
 @endsection
 
@@ -72,6 +126,22 @@
         $('#listitem').select2({
             width: '100%'
         });
+        
+        $('.editmodal').on('click', function() {
+            let id = $(this).data('id');
+            let itemcode = $(this).data('itemcode');
+            let itemdesc = $(this).data('itemdesc');
+            let rn = $(this).data('itemrn');
+
+            let year = String(rn).substring(0, 2);
+            let newrn = String(rn).substring(2);
+
+            $('#e_rn').val(newrn);
+            $('#e_yearrn').val(year);
+            $('#e_item').val(itemcode + ' - ' + itemdesc);
+            $('#e_id').val(id);
+        });
+
         
         $(document).ready(function() {
             var cur_url = window.location.href;
