@@ -19,22 +19,12 @@ class PrefixController extends Controller
         $prefix = Prefix::first();
 
         $prefiximr = PrefixIMR::get();
-        
 
-        return view('setting.prefix.index',compact('prefix','prefiximr'));
+
+        return view('setting.prefix.index', compact('prefix', 'prefiximr'));
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-     
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -44,16 +34,16 @@ class PrefixController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        $prefix = Prefix::firstOrNew(['id'=>'1']);
+
+        $prefix = Prefix::firstOrNew(['id' => '1']);
         $prefix->prefix_rcpt_pr = $request->prefixrcpt;
         $prefix->prefix_rcpt_rn = $request->rnrcpt;
         $prefix->prefix_ketidaksesuaian = $request->prefixtidaksesuai;
         $prefix->prefix_ketidaksesuaian_rn = $request->rntidaksesuai;
         $prefix->save();
-        
-        if($request->prefix){
-            foreach($request->prefix as $key => $datas){
+
+        if ($request->prefix) {
+            foreach ($request->prefix as $key => $datas) {
                 $prefiximr = new PrefixIMR();
                 $prefiximr->pin_prefix = $datas;
                 $prefiximr->pin_rn = '000000';
@@ -75,48 +65,15 @@ class PrefixController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Master\Prefix  $prefix
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Prefix $prefix)
+    public function updaternimr(Request $request)
     {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Master\Prefix  $prefix
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Prefix $prefix)
-    {
-        //
-    }
+        $prefiximr = PrefixIMR::findOrFail($request->e_id);
+        $prefiximr->pin_prefix = $request->e_prefix;
+        $prefiximr->pin_rn = $request->e_yearrn.$request->e_rn;
+        $prefiximr->save();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Master\Prefix  $prefix
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Prefix $prefix)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Master\Prefix  $prefix
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Prefix $prefix)
-    {
-        //
+        alert()->success('Success', 'Prefix IMR Updated');
+        return back();
     }
 }

@@ -310,7 +310,7 @@ class PurchaseOrderServices
                     $idmaster = $detailreceipt->rcptd_rcpt_id;
 
                     $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
-                    $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
+                    $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_rcvd;
                     $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
                     $detailreceipt->rcptd_loc = $loc;
                     $detailreceipt->rcptd_exp_date = $datas->t_lvc_exp_detail_date;
