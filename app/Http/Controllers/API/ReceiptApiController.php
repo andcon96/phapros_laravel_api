@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PoApiResources;
 use App\Http\Resources\ReceiptApiResources;
 use App\Http\Resources\WsaPoResources;
+use App\Models\Master\ErrorQxtend;
 use App\Models\Transaksi\ApprovalHist;
 use App\Models\Transaksi\LaporanReceiptModel;
 use App\Models\Transaksi\PurchaseOrderMaster;
@@ -68,10 +69,7 @@ class ReceiptApiController extends Controller
         
         $receiptdata = ReceiptMaster::with('getpo')->where('rcpt_nbr',$receiptnbr)->first();
         $datahist = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->first();
-        if($datahist){
-            Log::channel('qxtendReceipt')->info('receipt already approved for receipt id: '.$receiptdata->id);
-            return 'approvehist exist';
-        }
+        
         if($receiptdata->rcpt_approve_status == 1){
             Log::channel('qxtendReceipt')->info('receipt already approved for receipt id: '.$receiptdata->id);
             return 'approvehist exist';
@@ -98,10 +96,10 @@ class ReceiptApiController extends Controller
 
                 //jika memilih data dikirim ke QAD
                 if($statusapprove == 1){
-
+                    
                 $qxtendreceipt = (new PurchaseOrderServices())->qxPurchaseOrderReceipt($datarcptmstr);
                 
-                if($qxtendreceipt == 'success'){
+                if($qxtendreceipt[0] == 'success'){
                     $datarcptmstr->rcpt_status = 'finished';
                     $datarcptmstr->rcpt_approve_status = 0;
                     $datarcptmstr->save();
@@ -109,16 +107,22 @@ class ReceiptApiController extends Controller
                     DB::commit();
                     return 'approve success';
                 }
-                else if($qxtendreceipt == 'failed'){
+                else if($qxtendreceipt[0] == 'failed'){
                     DB::rollback();
                     $datarcptmstr->rcpt_approve_status = 0;
                     $datarcptmstr->save();
+                    $errordb = new ErrorQxtend();
+                    $errordb->eqa_rcpt_id = $datarcptmstr->id;
+                    $errordb->eqa_rcpt_nbr = $datarcptmstr->rcpt_nbr;
+                    $errordb->eqa_qxtend_message = $qxtendreceipt[1];
+                    $errordb->save();
                     Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datarcptmstr['rcpt_nbr'].'qxtend');
-                    return 'approve failed';
+                    return 'approve QAD failed';
                 }
             }
             //jika memilih data tidak dikirim ke QAD
             elseif($statusapprove == 0){
+                
                 $datarcptmstr->rcpt_status = 'finished';
                 $datarcptmstr->rcpt_approve_status = 0;
                 $datarcptmstr->save();
@@ -133,7 +137,6 @@ class ReceiptApiController extends Controller
             $receiptdata->rcpt_approve_status = 0;
             $receiptdata->save();
             Log::channel('qxtendReceipt')->info('Approve rcpt_nbr: '.$datarcptmstr['rcpt_nbr'].' '.$err);
-            
             return 'approve failed';
         }
     }
@@ -143,10 +146,7 @@ class ReceiptApiController extends Controller
         $receiptnbr = $request->idrcpt;
         $receiptdata = ReceiptMaster::where('rcpt_nbr',$receiptnbr)->first();
         $datahist = ApprovalHist::where('apphist_receipt_id',$receiptdata->id)->first();
-        if($datahist){
-            Log::channel('qxtendReceipt')->info('receipt already rejected for receipt id: '.$receiptdata->id);
-            return 'approvehist exist';
-        }
+        
         if($receiptdata->rcpt_approve_status == 1){
             Log::channel('qxtendReceipt')->info('receipt already approved for receipt id: '.$receiptdata->id);
             return 'approvehist exist';
@@ -231,22 +231,32 @@ class ReceiptApiController extends Controller
     {
         $receiptnbr = $request->rcptnbr;
         
-        $data = LaporanReceiptModel::with('getfoto')->where('laporan_rcptnbr','=',$receiptnbr)
-        
-        // ->orderBy('id','desc')
-        ->groupby('laporan_rcptnbr')
-        ->groupby('laporan_lot')
-        ->groupby('laporan_batch')
+        $data = LaporanReceiptModel::with('getfoto')
+        ->join(
+            DB::Raw('
+            (select laporan_rcptnbr as laporan_rcptnbr2,laporan_lot as laporan_lot2,laporan_batch as laporan_batch2,max(updated_at) as updated_at2 from laporan_receipt 
+            group by laporan_rcptnbr2,
+            laporan_lot2,
+            laporan_batch2) receipt2'),
+            function($join){
+                $join->on('receipt2.laporan_rcptnbr2','=','laporan_rcptnbr');
+                $join->on('receipt2.laporan_lot2','=','laporan_lot');
+                $join->on('receipt2.laporan_batch2','=','laporan_batch');
+                $join->on('receipt2.updated_at2','=','updated_at');
+            }
+        )
+        ->where('laporan_rcptnbr','=',$receiptnbr)
+        ->orderBy('id','desc')
         ->selectRaw(
             'id,
             laporan_rcptnbr,
-            max(laporan_imr) as laporan_imr,
+            laporan_imr,
             laporan_lot,
             laporan_batch,
-            max(laporan_jmlmasuk) as laporan_jmlmasuk,
-            max(laporan_komplaindetail) as laporan_komplaindetail ,
-            max(laporan_komplain) as laporan_komplain,
-            max(laporan_keterangan) as laporan_keterangan')
+            laporan_jmlmasuk,
+            laporan_komplaindetail ,
+            laporan_komplain,
+            laporan_keterangan')
         // ->get()
         ->get()
         ->toArray();

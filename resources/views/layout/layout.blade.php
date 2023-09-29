@@ -29,6 +29,12 @@
     <link rel="stylesheet" href="{{ url('/phapros/vendor/pickadate/themes/default.date.css') }}">
     <link href="https://cdn.lineicons.com/2.0/LineIcons.css" rel="stylesheet">
 
+    <style>
+        .swal2-select{
+            display: none !important;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -979,6 +985,7 @@
                             <li><a href="{{ route('usermaint.index') }}">User Master</a></li>
                             <li><a href="{{ route('prefixmaint.index') }}">Prefix Master</a></li>
                             <li><a href="{{ route('itemmaint.index') }}">Item Master</a></li>
+                            <li><a href="{{ route('errorlist.index') }}">Error Approve List</a></li>
                         </ul>
                     </li>
 
@@ -1099,6 +1106,7 @@
     <script src="./vendor/svganimation/svg.animation.js"></script> --}}
     <script src="{{ url('/phapros/vendor/svganimation/vivus.min.js') }}"></script>
     <script src="{{ url('/phapros/vendor/svganimation/svg.animation.js') }}"></script>
+    @include('sweetalert::alert')
 
 
 

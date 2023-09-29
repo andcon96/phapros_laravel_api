@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\SendEmailPOApproval;
 use App\Models\Master\Approval;
+use App\Models\Master\ErrorQxtend;
 use App\Models\Master\Item;
 use App\Models\Master\Prefix;
 use App\Models\Master\PrefixIMR;
@@ -457,7 +458,7 @@ class PurchaseOrderServices
         $qxwsa = Qxwsa::firstOrFail();
         
         if (is_null($qxwsa->qx_url)) {
-            return 'nourl';
+            return ['failed','nourl'];
         }
         // Var Qxtend
         $qxUrl          = $qxwsa->qx_url;
@@ -546,7 +547,6 @@ class PurchaseOrderServices
                                     <chgExpire>'.$datas['rcptd_exp_date'].'</chgExpire>
                                     <serialsYn>true</serialsYn>
                                     
-                                    
                                 </lineDetail>
                                 </purchaseOrderReceive>';
             }
@@ -600,7 +600,7 @@ class PurchaseOrderServices
 
         if (is_bool($qdocResponse)) {
             Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' qxtend connection error');
-            return 'failed';
+            return ['failed','connection failed'];
         }
         // dd($qdocResponse, $qdocRequest);
 
@@ -611,11 +611,21 @@ class PurchaseOrderServices
         $qdocResult = (string) $xmlResp->xpath('//ns1:result')[0];
 
         if ($qdocResult == "success" or $qdocResult == "warning") {
-            return 'success';
+            return ['success',''];
         } else {
+            $xmlResp->registerXPathNamespace('ns3', 'urn:schemas-qad-com:xml-services:common');
+            $qdocMsgDesc = $xmlResp->xpath('//ns3:tt_msg_desc');
+            $output = '';
+            foreach($qdocMsgDesc as $datas){
+                if(str_contains($datas, 'ERROR:')){
+                    $output .= $datas. ' - ';
+                }
+            }
+            $output = substr($output, 0, -3);
+
             Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocRequest);
             Log::channel('qxtendReceipt')->info('rcpt_nbr: ' . $data['rcpt_nbr'] . ' ' . $qdocResponse);
-            return 'failed';
+            return ['failed',$output];
         }
     }
 /*

@@ -17,7 +17,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "*",
         "maatwebsite/excel": "^3.1",
-        "realrashid/sweet-alert": "^4.1"
+        "realrashid/sweet-alert": "^7.1"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

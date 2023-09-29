@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Menu\ErrorQxtendController;
 use App\Http\Controllers\Menu\ItemController;
 use App\Http\Controllers\Menu\PrefixController;
 use App\Http\Controllers\Menu\UserController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Transaksi\PurchaseOrderController;
 use App\Http\Controllers\RencanaProduksiController;
 use App\Http\Controllers\Transaksi\KetersediaanRawMaterialController;
 use App\Http\Controllers\Transaksi\MRPReportController;
+use App\Models\Master\ErrorQxtend;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +66,9 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('itemmaint', ItemController::class);
         Route::post('loaditem', [ItemController::class, 'loaditem'])->name('LoadItem');
         Route::post('updaternitem', [ItemController::class, 'updaternitem'])->name('updateRunningNbrItem');
+        //error qxtend menu
+        Route::resource('errorlist', ErrorQxtendController::class);
+        
     });
 
     // Menu Report MRP

@@ -93,25 +93,31 @@ class UserController extends Controller
         
         try{
             $user = User2::where('username',$username)->first();
-            $user = new User2();
-            
-            $user->username = $request->username;
-            $user->name = $request->name;
-            $user->can_access_web = $canaccessweb;
-            $user->user_approver = $checkapprover;
-            $user->can_receive_email = $checkreceivemail;
-            $user->can_access_it_menu = $checkaccessitmenu;
-            if($password != null){
-                $user->password = Hash::make($password);
+            if(!$user){                
+                $user = new User2();
+                
+                $user->username = $request->username;
+                $user->name = $request->name;
+                $user->can_access_web = $canaccessweb;
+                $user->user_approver = $checkapprover;
+                $user->can_receive_email = $checkreceivemail;
+                $user->can_access_it_menu = $checkaccessitmenu;
+                if($password != null){
+                    $user->password = Hash::make($password);
+                }
+                $user->save();
+                DB::commit();
+                alert()->success('Success', 'User successfully created!');
+                return redirect()->route('usermaint.index');
             }
-            $user->save();
-            DB::commit();
-            alert()->success('Success', 'User successfully created!');
-            return redirect()->route('usermaint.index');
+            else{
+                alert()->error('Error', 'User Exist!');
+                return redirect()->route('usermaint.index');
+            }
         }
         catch(Exception $err){
             DB::rollBack();
-            
+            dd($err);
             alert()->error('Error', 'User failed to created!');
             return redirect()->route('usermaint.index');
         }
@@ -235,12 +241,12 @@ class UserController extends Controller
                 'is_active' => $status,
             ]);
             DB::commit();
-            alert()->error('Success', 'User '.$request->temp_stat.'d');
+            alert()->success('Success', 'User '.$request->temp_stat.'d');
             return redirect()->route('usermaint.index');
         }
         catch(Exception $err){
             DB::rollback();
-            alert()->error('Error', 'User failed to delete!');
+            alert()->error('Error', 'User failed to change status!');
             return redirect()->route('usermaint.index');
 
         }   

@@ -41,11 +41,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('getreceiptketidaksesuaian',[ReceiptApiController::class,'getlaporanketidaksesuaian']);        
     Route::get('getreceiptdetail',[ReceiptApiController::class,'getreceiptdetail']);    
     Route::get('getreceiptfoto',[ReceiptApiController::class,'getreceiptfoto']);
-    route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);
+    
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
     
 });
-
+route::post('approvereceipt', [ReceiptApiController::class, 'approvereceipt']);    
 Route::post('login', [APIController::class, 'login']);
 
 
