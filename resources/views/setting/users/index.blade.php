@@ -355,9 +355,9 @@
         $(document).on('change', '#c_username', function() {
             if ($('#c_username').val() != '') {
                 var username = $('#c_username').find(":selected").text();
-                var name = username.split(' -- ');
-
-                $('#name').val(name[1]);
+                var name = username.split(' --');
+                
+                $('#name').val(name[1].trim());
             }
         });
 
