@@ -739,6 +739,52 @@
         </div>
     </div>
 
+    {{-- Data File Upload --}}
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    File Upload
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group row col-md-12">
+                    <div class="col-lg-10 offset-lg-1">
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0 table-striped"
+                                style="overflow: scroll; white-space:nowrap;">
+                                <thead>
+                                    <tr>
+                                        <th width="12%">Image</th>
+                                        <th width="12%">Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($receipt->getFileUpload as $key => $row)
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <a href="{{asset($row->rcptfu_path)}}" target="_blank">
+                                                    <img src="{{asset($row->rcptfu_path)}}" height="120" width="120" alt="">
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="{{route('downloadFileReceipt', ['id' => $row->id])}}" target="_blank">
+                                                    <i class="fa fa-download color-primary"></i>
+                                                </a>
+                                                
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Data Detail --}}
     <div class="col-lg-12">
         <div class="card">
@@ -801,6 +847,7 @@
             </div>
         </div>
     </div>
+
 
     <div id="loader" class="lds-dual-ring hidden overlay"></div>
 @endsection

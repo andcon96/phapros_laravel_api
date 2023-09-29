@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('viewreceipt',[PurchaseOrderController::class, 'viewreceipt'])->name('viewReceipt');
     Route::get('exportpo',[PurchaseOrderController::class, 'exportpo'])->name('ExportPO');
     Route::get('exportpdfrcp',[PurchaseOrderController::class, 'exportpdfrcp'])->name('ExportReceiptPDF');
+    Route::get('downloadfile',[PurchaseOrderController::class, 'downloadfilercp'])->name('downloadFileReceipt');
     
 
     //================================

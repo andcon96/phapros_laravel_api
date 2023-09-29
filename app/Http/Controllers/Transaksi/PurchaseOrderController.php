@@ -8,6 +8,7 @@ use App\Exports\PurchaseOrderExport;
 use App\Http\Controllers\Controller;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptDetail;
+use App\Models\Transaksi\ReceiptFileUpload;
 use App\Models\Transaksi\ReceiptMaster;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -64,7 +65,7 @@ class PurchaseOrderController extends Controller
 
     public function viewreceipt(Request $request){
         $receipt = ReceiptMaster::query()
-                        ->with(['getUser','getChecklist','getDocument','getKemasan','getTransport','getDetail','getpo'])
+                        ->with(['getUser','getChecklist','getDocument','getKemasan','getTransport','getDetail','getpo','getFileUpload'])
                         ->where('rcpt_nbr',$request->rcpnbr)
                         ->firstOrFail();
                         
@@ -127,5 +128,18 @@ class PurchaseOrderController extends Controller
 
             // return view('transaksi.po.receipt.exportpdf.checklist');
         }
+    }
+
+    public function downloadfilercp(Request $request){
+        
+        $receiptfu = ReceiptFileUpload::findOrFail($request->id);
+
+        $filepath = public_path($receiptfu->rcptfu_path);
+        $arrayfu = explode('/',$receiptfu->rcptfu_path);
+
+        $filename = $arrayfu[2] ?? 'downladedfile.png';
+        
+        return response()->download($filepath, $filename);
+
     }
 }
