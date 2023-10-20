@@ -94,6 +94,8 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_manu_date = $datas->t_lvc_manu_detail_date;
                 $detailreceipt->rcptd_lot = $datas->t_lvc_lot;
                 $detailreceipt->rcptd_batch = $datas->t_lvc_batch;
+                $detailreceipt->rcptd_um_pr = $datas->t_lvc_pt_um;
+                
                 $detailreceipt->save();
             }
 

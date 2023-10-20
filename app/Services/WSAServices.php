@@ -203,6 +203,8 @@ class WSAServices
                     $qtyarrival += $rows->rcptd_qty_arr;
                 }
 
+                $umkonv = (float)$datas->t_lvd_um_konv == 0 ? 1 : $datas->t_lvd_um_konv;
+
                 $arrayloop[] = [
                     "t_lvc_nbr" => (string)$datas->t_lvc_nbr,
                     "t_lvc_domain" => (string)$datas->t_lvc_domain,
@@ -229,6 +231,8 @@ class WSAServices
                     "t_lvc_country" => (string)$datas->t_lvc_country,
                     "t_lvd_ongoing_qtyrcvd" => (string)$qtyreceive,
                     "t_lvd_ongoing_qtyarr" => (string)$qtyarrival,
+                    "t_lvc_pt_um" => (string)$datas->t_lvc_pt_um,
+                    "t_lvd_um_konv" => (string)$umkonv,
                 ];
             }
 
