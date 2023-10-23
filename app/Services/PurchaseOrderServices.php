@@ -87,6 +87,7 @@ class PurchaseOrderServices
                 $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_terima;
                 $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
                 $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
+                $detailreceipt->rcptd_um_konv = $datas->t_lvd_um_konv;
                 // $detailreceipt->rcptd_loc = $datas->t_lvc_loc;
                 $detailreceipt->rcptd_loc = $loc;
                 // $detailreceipt->rcptd_site = $site;
