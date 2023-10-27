@@ -62,17 +62,19 @@ class LaporanApiController extends Controller
         laporan_tgl,
         laporan_komplaindetail,
         laporan_no,
-        rcptd_part_um
+        rcptd_part_um,
+        rcptd_um_pr,
+        rcptd_um_konv
         ')
-        ->where('rcptd_qty_rej','>',0)
-        ->groupBy('laporan_rcptnbr')
-        ->groupBy('laporan_batch')
-        ->groupBy('laporan_lot');
+        
+        ->groupBy('rcptd_rcpt_id')
+        ->groupBy('rcptd_batch')
+        ->groupBy('rcptd_lot');
         
 
         $data = $data->get()->take(10);
          
-        
+        // dd($data);
         return $data;
         
     }

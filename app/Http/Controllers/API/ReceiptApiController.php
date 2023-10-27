@@ -51,7 +51,10 @@ class ReceiptApiController extends Controller
         sum(rcptd_qty_arr) as sum_qty_arr,
         sum(rcptd_qty_appr) as sum_qty_appr,
         sum(rcptd_qty_rej) as sum_qty_rej,
-        min(rcptd_batch) as rcptd_batch
+        min(rcptd_batch) as rcptd_batch,
+        max(rcptd_part_um) as rcptd_part_um,
+        max(rcptd_um_pr) as rcptd_um_pr,
+        max(rcptd_um_konv) as rcptd_um_konv
 
         ');
         
@@ -207,7 +210,9 @@ class ReceiptApiController extends Controller
             item_desc,
             rcptd_exp_date,
             rcptd_manu_date,
-            rcptd_part_um')
+            rcptd_part_um,
+            rcptd_um_pr,
+            rcptd_um_konv')
         ->orderBy('rcptd_line','asc')
         ->get()
         ->toArray();

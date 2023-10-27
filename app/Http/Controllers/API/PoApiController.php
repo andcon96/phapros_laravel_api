@@ -9,6 +9,7 @@ use App\Http\Resources\WsaPoResources;
 use App\Models\Master\Item;
 use App\Models\Master\PrefixIMR;
 use App\Models\Transaksi\PurchaseOrderMaster;
+use App\Models\Transaksi\ReceiptFileUpload;
 use App\Models\Transaksi\ReceiptMaster;
 use App\Services\PurchaseOrderServices;
 use App\Services\WSAServices;
@@ -114,6 +115,10 @@ class PoApiController extends Controller
             $totalArrival = $datareceipt->getDetailReject->sum('rcptd_qty_arr');
             $totalApprove = $datareceipt->getDetailReject->sum('rcptd_qty_appr');
             $totalReject = $datareceipt->getDetailReject->sum('rcptd_qty_rej');
+            $fotodelete = json_decode($data['listdeleted']);
+            foreach ($fotodelete as $fd){
+                ReceiptFileUpload::where('rcptfu_rcpt_id','=',$datareceipt->id)->where('rcptfu_path','=',$fd)->delete();
+            }
             return response()->json([
                 "message" => "Success",
                 "ponbr" => $datareceipt->getpo->po_nbr ?? '',

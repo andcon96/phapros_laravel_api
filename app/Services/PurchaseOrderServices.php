@@ -541,6 +541,7 @@ class PurchaseOrderServices
                                     <line>' . $datas['rcptd_line'] . '</line>
                                     <lotserialQty>' . $datas['rcptd_qty_appr'] . '</lotserialQty>
                                     <packingQty>' .$datas['rcptd_qty_per_package']. '</packingQty>
+                                    <receiptUm>'.$datas['rcptd_um_pr'].'</receiptUm>
                                     <location>' . $datas['rcptd_loc'] . '</location>
                                     <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
                                     <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
