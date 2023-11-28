@@ -81,6 +81,7 @@ class LaporanApiController extends Controller
 
     public function submitlaporan(Request $request)
     {
+        
         $data = $request->all();
         $rcptnbr = $request->idrcpt;
         $ponbr = $request->ponbr;

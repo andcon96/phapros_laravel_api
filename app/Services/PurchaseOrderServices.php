@@ -205,7 +205,7 @@ class PurchaseOrderServices
             $kemasan->rcptk_is_dry_desc = $data['keterangan_is_dry'];
             $kemasan->rcptk_is_not_spilled = $data['is_not_spilled'] == 'null' ? 1 : $data['is_not_spilled'];
             $kemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
-            $kemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : 0;
+            $kemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : $data['is_sealed'];
             $kemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : $data['is_manufacturer_label'];
             $kemasan->save();
 
@@ -389,7 +389,7 @@ class PurchaseOrderServices
                 $cekkemasan->rcptk_is_dry_desc = $data['keterangan_is_dry'];
                 $cekkemasan->rcptk_is_not_spilled = $data['is_not_spilled'] == 'null' ? 1 : $data['is_not_spilled'];
                 $cekkemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
-                $cekkemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : 0;
+                $cekkemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : $data['is_sealed'];
                 $cekkemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : $data['is_manufacturer_label'];
                 $cekkemasan->save();
             }
@@ -547,7 +547,7 @@ class PurchaseOrderServices
                                     <receiptUm>'.$datas['rcptd_um_pr'].'</receiptUm>
                                     <location>' . $datas['rcptd_loc'] . '</location>
                                     <lotserial>' . $datas['rcptd_lot'] . '</lotserial>
-                                    <lotref>' .$datas['rcptd_qty_per_package']. '</lotref>
+                                    <lotref>' .floatval($datas['rcptd_qty_per_package']). '</lotref>
                                     <podQad04>' .$datas['rcptd_batch']. '</podQad04>
                                     <multiEntry>false</multiEntry>
                                     <chgAttr>true</chgAttr>
