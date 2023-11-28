@@ -313,6 +313,9 @@ class PurchaseOrderServices
                 if($detailreceipt){
                     $idmaster = $detailreceipt->rcptd_rcpt_id;
 
+                    if($datas->t_lvd_qty_per_package != '' && $datas->t_lvd_qty_per_package != 0.00){
+                        $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
+                    }
                     $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
                     $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_rcvd;
                     $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;

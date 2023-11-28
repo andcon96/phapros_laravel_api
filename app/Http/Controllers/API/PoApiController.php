@@ -107,7 +107,7 @@ class PoApiController extends Controller
 
     public function saveeditpo(Request $request){
         $data = $request->all();
-
+        
         $saveddata = (new PurchaseOrderServices())->saveEditDetail($data);
         if($saveddata[0] == true){
             // 0 => Status True/False , 1 => Rcpt ID
