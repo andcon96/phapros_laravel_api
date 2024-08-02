@@ -41,7 +41,7 @@ class PurchaseOrderServices
     public function savedetail($data)
     {
         $newdata = json_decode($data['data']);
-
+        
         $ponbr = $newdata[0]->t_lvc_nbr ?? '';
         $domain = $newdata[0]->t_lvc_domain ?? '';
 
@@ -207,6 +207,10 @@ class PurchaseOrderServices
             $kemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
             $kemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : $data['is_sealed'];
             $kemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : $data['is_manufacturer_label'];
+            // Tambahan Halal **AD
+            $kemasan->rcptk_has_logo_halal = $data['adalogohalal'] == 'true' ? 1 : 0;
+            $kemasan->rcptk_no_logo_halal = $data['tidakadalogohalal'] == 'true' ? 1 : 0;
+            $kemasan->rcptk_not_regulated_logo_halal = $data['tidakditerapkanlogohalal'] == 'true' ? 1 : 0;
             $kemasan->save();
 
             // Save Angkutan
@@ -391,6 +395,12 @@ class PurchaseOrderServices
                 $cekkemasan->rcptk_is_not_spilled_desc = $data['keterangan_is_not_spilled'];
                 $cekkemasan->rcptk_is_sealed = $data['is_sealed'] == 'null' ? 1 : $data['is_sealed'];
                 $cekkemasan->rcptk_is_manufacturer_label = $data['is_manufacturer_label'] == 'null' ? 1 : $data['is_manufacturer_label'];
+                
+                
+                // Tambahan Halal **AD
+                $cekkemasan->rcptk_has_logo_halal = $data['adalogohalal'] == 'true' ? 1 : 0;
+                $cekkemasan->rcptk_no_logo_halal = $data['tidakadalogohalal'] == 'true' ? 1 : 0;
+                $cekkemasan->rcptk_not_regulated_logo_halal = $data['tidakditerapkanlogohalal'] == 'true' ? 1 : 0;
                 $cekkemasan->save();
             }
 

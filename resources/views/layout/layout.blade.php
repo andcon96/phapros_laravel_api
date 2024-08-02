@@ -760,7 +760,7 @@
                                 </a>
                             </li>
                             {{-- Notification --}}
-                            <li class="nav-item dropdown notification_dropdown">
+                            {{-- <li class="nav-item dropdown notification_dropdown">
                                 <a class="nav-link bell ai-icon" href="#" role="button"
                                     data-toggle="dropdown">
                                     <svg id="icon-user" xmlns="http://www.w3.org/2000/svg" width="20"
@@ -847,7 +847,7 @@
                                     <a class="all-notification" href="#">See all notifications <i
                                             class="ti-arrow-right"></i></a>
                                 </div>
-                            </li>
+                            </li> --}}
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
                                     <img src="{{ url('/phapros/images/profile/pic1.jpg') }}" width="20"

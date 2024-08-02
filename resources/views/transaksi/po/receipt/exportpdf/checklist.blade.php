@@ -411,16 +411,19 @@
         <tr>
             <td rowspan="2">*) Khusus untuk Bahan Halal, cek logo HALAL / Check halal sign</td>
             <td>
-                <label for=""><input type="checkbox"> Ada / Available</label>
+                <label for=""><input type="checkbox" 
+                        {{ $data->getKemasan->rcptk_has_logo_halal == 1 ? 'Checked' : '' }}> Ada / Available</label>
             </td>
             <td>
-                <label for=""><input type="checkbox"> Tidak Ada / Not Available</label>
+                <label for=""><input type="checkbox"
+                        {{ $data->getKemasan->rcptk_no_logo_halal == 1 ? 'Checked' : '' }}> Tidak Ada / Not Available</label>
             </td>
             <td></td>
         </tr>
         <tr>
             <td>
-                <label for=""><input type="checkbox"> tidak diterapkan / not applicable</label>
+                <label for=""><input type="checkbox"
+                    {{ $data->getKemasan->rcptk_not_regulated_logo_halal == 1 ? 'Checked' : '' }}> Tidak Diterapkan / Not Applicable</label>
             </td>
             <td colspan="2">
                 <b>*) Berikan penandaan Not Applicable apabila bahan/barang yang diterima tidak termasuk dalam Daftar
