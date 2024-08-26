@@ -14,9 +14,9 @@ class AddHalalFieldToRcptKemasanTable extends Migration
     public function up()
     {
         Schema::table('rcpt_kemasan', function (Blueprint $table) {
-            $table->string('rcptk_has_logo_halal')->nullable()->after('rcptk_is_manufacturer_label');
-            $table->string('rcptk_no_logo_halal')->nullable()->after('rcptk_has_logo_halal');
-            $table->string('rcptk_not_regulated_logo_halal')->nullable()->after('rcptk_no_logo_halal');
+            $table->tinyInteger('rcptk_has_logo_halal')->nullable()->after('rcptk_is_manufacturer_label')->default(0);
+            $table->tinyInteger('rcptk_no_logo_halal')->nullable()->after('rcptk_has_logo_halal')->default(0);
+            $table->tinyInteger('rcptk_not_regulated_logo_halal')->nullable()->after('rcptk_no_logo_halal')->default(0);
         });
     }
 
