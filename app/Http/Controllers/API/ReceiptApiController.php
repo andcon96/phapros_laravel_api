@@ -212,7 +212,8 @@ class ReceiptApiController extends Controller
             rcptd_manu_date,
             rcptd_part_um,
             rcptd_um_pr,
-            rcptd_um_konv')
+            rcptd_um_konv,
+            rcptd_qty_per_package')
         ->orderBy('rcptd_line','asc')
         ->get()
         ->toArray();

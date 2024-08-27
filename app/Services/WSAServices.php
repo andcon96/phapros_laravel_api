@@ -412,6 +412,10 @@ class WSAServices
                     $newitem->item_desc = (string)$datas->t_item_desc;
                     $newitem->save();
                 }
+                else{
+                    $item->item_desc = (string)$datas->t_item_desc;
+                    $item->save();
+                }
             }
             
             // $dataloop = collect($dataloop);
