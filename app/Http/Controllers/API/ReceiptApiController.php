@@ -58,7 +58,7 @@ class ReceiptApiController extends Controller
 
         ');
         
-        $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get()->take(10);
+        $data = $data->groupBy('rcptd_part')->groupBy('rcptd_rcpt_id')->get();
         return $data;
     }
 
