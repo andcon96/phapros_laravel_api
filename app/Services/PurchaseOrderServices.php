@@ -10,6 +10,7 @@ use App\Models\Master\Prefix;
 use App\Models\Master\PrefixIMR;
 use App\Models\Master\Qxwsa;
 use App\Models\Transaksi\ApprovalHist;
+use App\Models\Transaksi\PurchaseOrderDetail;
 use App\Models\Transaksi\PurchaseOrderMaster;
 use App\Models\Transaksi\ReceiptChecklist;
 use App\Models\Transaksi\ReceiptDetail;
@@ -314,12 +315,38 @@ class PurchaseOrderServices
             foreach ($newdata as $key => $datas) {
                 $loc = $datas->t_lvc_loc;
                 $detailreceipt = ReceiptDetail::find($datas->t_lvc_nbr);
+                $qtyopen = 0;
+                $qtyongoing = 0;
                 if($detailreceipt){
                     $idmaster = $detailreceipt->rcptd_rcpt_id;
+                    $cekmaster = ReceiptMaster::find($idmaster);
+                    $cekpo = PurchaseOrderMaster::where('id',$cekmaster->rcpt_po_id)->first();
+
+                    $cekpodetail = PurchaseOrderDetail::where('pod_po_id',$cekpo->id)
+                    ->where('pod_line',$detailreceipt->rcptd_line)
+                    ->where('pod_part',$detailreceipt->rcptd_part)
+                    ->first();
+
+                    $qtyopen = $cekpodetail->pod_qty_ord - $cekpodetail->pod_qty_rcvd;
+
+                    $cekdetail = ReceiptDetail::where('rcptd_rcpt_id',$idmaster)
+                    ->where('rcptd_line',$detailreceipt->rcptd_line)
+                    ->get();
+                    
+                    foreach($cekdetail as $cd){
+                        $qtyongoing += $cd->rcptd_qty_appr;
+                    }
+
+                    $totalongoing = $qtyongoing + $datas->t_lvd_qty_rcvd;
+
+                    if($totalongoing > $qtyopen){
+                        return [false,"over"];
+                    }
 
                     if($datas->t_lvd_qty_per_package != '' && $datas->t_lvd_qty_per_package != 0.00){
                         $detailreceipt->rcptd_qty_per_package = $datas->t_lvd_qty_per_package;
                     }
+
                     $detailreceipt->rcptd_qty_arr = $datas->t_lvd_qty_datang;
                     $detailreceipt->rcptd_qty_appr = $datas->t_lvd_qty_rcvd;
                     $detailreceipt->rcptd_qty_rej = $datas->t_lvd_qty_reject;
@@ -333,7 +360,6 @@ class PurchaseOrderServices
             }
 
             // Rubah Status Master
-            $cekmaster = ReceiptMaster::find($idmaster);
             if($cekmaster){
                 $cekmaster->rcpt_status = 'created';
                 $cekmaster->save();
@@ -452,7 +478,7 @@ class PurchaseOrderServices
         } catch (Exception $e) {
             DB::rollback();
             Log::channel('savepo')->info($e);
-            return [false];
+            return [false,'gagal'];
         }
     }
 

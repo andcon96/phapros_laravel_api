@@ -128,9 +128,15 @@ class PoApiController extends Controller
                 "totalReject" => $totalReject,
             ],200);
         }else{
-            return response()->json([
-                "message" => "Failed"
-            ],400);
+            
+            if($saveddata[1] == "over"){
+                return response()->json(["message" => "Failed"],501);
+            }
+            else{
+                return response()->json([
+                    "message" => "Failed"
+                ],400);
+            }
         }
     }
 }

@@ -22,10 +22,10 @@ use Maatwebsite\Excel\Row;
 
 Route::middleware('auth:api')->group(function () {
     // PO
-    route::get('wsapo', [PoApiController::class, 'wsapo']);
+    
     route::get('getpo', [PoApiController::class, 'getpo']);
     route::post('savepo', [PoApiController::class, 'savepo']);
-    route::post('saveeditpo', [PoApiController::class, 'saveeditpo']);
+    ;
     route::get('wsaloc', [PoApiController::class, 'wsaloc']);
     route::get('testrec', [PoApiController::class, 'getreceipt']);
     route::get('getprefiximr', [PoApiController::class, 'getprefiximr']);
@@ -45,7 +45,8 @@ Route::middleware('auth:api')->group(function () {
     route::post('rejectreceipt', [ReceiptApiController::class, 'rejectreceipt']);
     
 });
-
+route::get('wsapo', [PoApiController::class, 'wsapo']);
+route::post('saveeditpo', [PoApiController::class, 'saveeditpo']);
 route::get('getpolaporan', [LaporanApiController::class, 'getreceipt']);       
 Route::post('login', [APIController::class, 'login']);
 
